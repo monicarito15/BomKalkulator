@@ -22,7 +22,7 @@ struct SplashView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 26))
                         .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
 
-                    Text("TollTrack")
+                    Text("BomKalkulator")
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundStyle(.white)

@@ -189,8 +189,8 @@ struct SettingsView: View {
             }
 
             Button {
-                let email = "carolinamera1985@gmail.com"
-                let subject = "TollTrack - Feilrapport"
+                let email = "apps.carolina.support@gmail.com"
+                let subject = "BomKalkulator - Feilrapport"
                 let urlString = "mailto:\(email)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
                 if let url = URL(string: urlString) {
                     UIApplication.shared.open(url)

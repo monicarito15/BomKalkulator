@@ -1,5 +1,5 @@
 {
-  "identifier" : "TollTrack",
+  "identifier" : "BomKalkulator",
   "nonConsumableProducts" : [
     {
       "displayPrice" : "2.99",
@@ -7,7 +7,7 @@
       "internalID" : "no.carolina.toll-app.unlimited",
       "localizations" : [
         {
-          "description" : "Unlock unlimited route searches in TollTrack.",
+          "description" : "Unlock unlimited route searches in BomKalkulator.",
           "displayName" : "Unlimited Searches",
           "locale" : "en_US"
         }
