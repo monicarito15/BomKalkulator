@@ -1,4 +1,4 @@
-# TollTrack
+# BomKalkulator
 
 Norwegian toll calculator for iOS. Enter an origin and destination, and the app shows every toll station on your route with real-time prices — so you know the cost before you drive.
 
