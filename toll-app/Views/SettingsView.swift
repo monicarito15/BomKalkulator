@@ -31,9 +31,11 @@ struct SettingsView: View {
     @AppStorage("defaultFuel") private var defaultFuel: String = FuelType.gas.rawValue
     @AppStorage("defaultAutopass") private var defaultAutopass: Bool = false
     
+    @EnvironmentObject private var purchaseManager: PurchaseManager
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.modelContext) private var modelContext
     @State private var showClearHistoryAlert = false
+    @State private var isRestoring = false
     
     private var selectedAppearance: AppAppearance {
         AppAppearance(rawValue: appearance) ?? .automatic
@@ -44,6 +46,7 @@ struct SettingsView: View {
             List {
                 appearanceSection
                 defaultsSection
+                purchasesSection
                 dataSection
                 aboutSection
             }
@@ -142,6 +145,35 @@ struct SettingsView: View {
         }
     }
     
+    // Purchases
+    private var purchasesSection: some View {
+        Section {
+            Button {
+                Task {
+                    isRestoring = true
+                    await purchaseManager.restorePurchases()
+                    isRestoring = false
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "arrow.clockwise.circle.fill")
+                        .foregroundStyle(.blue)
+                        .frame(width: 24)
+                    Text(isRestoring ? "Restoring..." : "Restore Purchase")
+                        .foregroundStyle(.primary)
+                }
+            }
+            .disabled(isRestoring || purchaseManager.isPremium)
+        } header: {
+            Text("PURCHASE")
+                .font(.caption)
+                .fontWeight(.semibold)
+        } footer: {
+            Text(purchaseManager.isPremium ? "You have unlimited searches." : "Already purchased? Tap to restore.")
+                .font(.caption2)
+        }
+    }
+
     // Data
     private var dataSection: some View {
         Section {
@@ -189,7 +221,7 @@ struct SettingsView: View {
             }
 
             Button {
-                let email = "apps.carolina.support@gmail.com"
+                let email = "carolinamera1985@gmail.com"
                 let subject = "BomKalkulator - Feilrapport"
                 let urlString = "mailto:\(email)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
                 if let url = URL(string: urlString) {
