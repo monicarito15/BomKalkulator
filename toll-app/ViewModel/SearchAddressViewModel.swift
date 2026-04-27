@@ -19,6 +19,7 @@ final class SearchAddressViewModel: NSObject, ObservableObject {
     @Published var searchQuery: String = ""
 
     private let completer = MKLocalSearchCompleter()
+    private var debounceTask: Task<Void, Never>?
 
     override init() {
         super.init()
@@ -32,13 +33,18 @@ final class SearchAddressViewModel: NSObject, ObservableObject {
         completer.resultTypes = [.address, .pointOfInterest]
     }
 
-    // Actualiza el fragmento del completer — MapKit devuelve sugerencias automáticamente
+    // Actualiza el fragmento del completer con debounce de 300ms para no saturar MapKit
     func searchAddresses(query: String) {
         searchQuery = query
+        debounceTask?.cancel()
         if query.isEmpty {
             completions = []
             completer.cancel()
-        } else {
+            return
+        }
+        debounceTask = Task {
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled else { return }
             completer.queryFragment = query
         }
     }

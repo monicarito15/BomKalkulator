@@ -45,6 +45,23 @@ struct MapView: View {
                     navigationButtonOverlay
                 }
 
+                // Loading overlay mientras se calcula la ruta
+                if mapVM.isLoadingRoute {
+                    VStack(spacing: 12) {
+                        ProgressView()
+                            .scaleEffect(1.2)
+                            .tint(.white)
+                        Text("Calculating route...")
+                            .font(.subheadline)
+                            .foregroundStyle(.white)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 16)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .shadow(radius: 8)
+                }
+
                 // Popup de detalle al tocar un toll marker
                 if selectedToll != nil {
                     TollDetailPopup(selectedToll: $selectedToll)

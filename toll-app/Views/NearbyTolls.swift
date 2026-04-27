@@ -21,41 +21,7 @@ struct NearbyTolls: View {
         !nearbyTolls.isEmpty
     }
     
-    // Computed property para obtener los peajes cercanos basados en la ubicación del usuario
-    private var nearbyTolls: [Vegobjekt] {
-        guard let userLocation = mapVm.userLocation else { return [] }
-        
-        let userCLLocation = CLLocation(latitude: userLocation.latitude, longitude: userLocation.longitude)
-        
-        // Filtrar peajes que estén dentro de 50km (50,000 metros)
-        let maxDistance: Double = 50_000
-        
-        let nearby = mapVm.toll.filter { toll in
-            guard let coordinates = toll.lokasjon?.coordinates else { return false }
-            let tollLocation = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
-            let distance = userCLLocation.distance(from: tollLocation)
-            return distance <= maxDistance
-        }
-        
-        // Ordenar por distancia (más cercanos primero)
-        let sorted = nearby.sorted { toll1, toll2 in
-            guard let dist1 = toll1.distanceInMeters(from: userLocation),
-                  let dist2 = toll2.distanceInMeters(from: userLocation) else { return false }
-            return dist1 < dist2
-        }
-
-        // Deduplicate ramp variants: keep only the closest when one name is a prefix of another
-        var deduped: [Vegobjekt] = []
-        for toll in sorted {
-            let name = toll.displayName
-            let isVariant = deduped.contains { existing in
-                let en = existing.displayName
-                return name.hasPrefix(en) || en.hasPrefix(name)
-            }
-            if !isVariant { deduped.append(toll) }
-        }
-        return deduped
-    }
+    private var nearbyTolls: [Vegobjekt] { mapVm.nearbyTollsCache }
     
     
     // Helper para calcular distancia en formato legible

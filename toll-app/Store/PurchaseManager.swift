@@ -10,7 +10,7 @@ import StoreKit
 @MainActor
 final class PurchaseManager: ObservableObject {
 
-    static let productID = "no.carolina.toll-app.unlimited"
+    static let productID = "no.carolina.toll_app.unlimited"
     static let freeSearchLimit = 10
 
     @Published var isPremium: Bool = false

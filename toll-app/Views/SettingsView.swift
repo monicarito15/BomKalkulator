@@ -29,8 +29,6 @@ struct SettingsView: View {
     @AppStorage("appAppearance") private var appearance: String = AppAppearance.automatic.rawValue
     @AppStorage("defaultVehicle") private var defaultVehicle: String = VehicleType.car.rawValue
     @AppStorage("defaultFuel") private var defaultFuel: String = FuelType.gas.rawValue
-    @AppStorage("defaultAutopass") private var defaultAutopass: Bool = false
-    
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.modelContext) private var modelContext
@@ -127,14 +125,6 @@ struct SettingsView: View {
                 .pickerStyle(.menu)
             }
             
-            // AutoPass
-            HStack(spacing: 12) {
-                Image(systemName: defaultAutopass ? "checkmark.shield.fill" : "shield.slash.fill")
-                    .foregroundStyle(defaultAutopass ? .blue : .secondary)
-                    .frame(width: 24)
-                
-                Toggle("AutoPass", isOn: $defaultAutopass)
-            }
         } header: {
             Text("DEFAULTS")
                 .font(.caption)

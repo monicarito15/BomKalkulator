@@ -22,6 +22,45 @@ final class MapViewModel: ObservableObject {
     @Published var totalPrice: Double = 0
     @Published var tollsOnRoute: [Vegobjekt] = []
 
+    @Published var isLoadingRoute: Bool = false
+
+    // Cache de peajes cercanos — se actualiza solo cuando cambia la ubicación
+    @Published var nearbyTollsCache: [Vegobjekt] = []
+
+    func updateNearbyTolls() {
+        guard let userLocation else {
+            nearbyTollsCache = []
+            return
+        }
+        let allTolls = toll
+        let loc = userLocation
+        Task.detached(priority: .userInitiated) {
+            let userCLLocation = CLLocation(latitude: loc.latitude, longitude: loc.longitude)
+            let maxDistance: Double = 50_000
+            let nearby = allTolls.filter { toll in
+                guard let coordinates = toll.lokasjon?.coordinates else { return false }
+                let tollLocation = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+                return userCLLocation.distance(from: tollLocation) <= maxDistance
+            }
+            let sorted = nearby.sorted { t1, t2 in
+                guard let d1 = t1.distanceInMeters(from: loc),
+                      let d2 = t2.distanceInMeters(from: loc) else { return false }
+                return d1 < d2
+            }
+            var deduped: [Vegobjekt] = []
+            for toll in sorted {
+                let name = toll.displayName
+                let isVariant = deduped.contains { existing in
+                    let en = existing.displayName
+                    return name.hasPrefix(en) || en.hasPrefix(name)
+                }
+                if !isVariant { deduped.append(toll) }
+            }
+            let result = Array(deduped.prefix(10))
+            await MainActor.run { self.nearbyTollsCache = result }
+        }
+    }
+
     var route: AppRoute? {
         guard selectedRouteIndex < routes.count else { return nil }
         return routes[selectedRouteIndex]
@@ -47,12 +86,12 @@ final class MapViewModel: ObservableObject {
         guard let route else { return }
         let capturedRoute = route
         let capturedTolls = toll
-        Task {
-            await Task.yield()  // let the UI redraw the new selected route first
-            tollsOnRoute = tollsNearRoute(route: capturedRoute, tolls: capturedTolls)
+        Task.detached(priority: .userInitiated) {
+            let result = MapViewModel.tollsNearRouteStatic(route: capturedRoute, tolls: capturedTolls)
+            await MainActor.run { self.tollsOnRoute = result }
         }
     }
-    
+
     func updateUserLocation() {
         userLocation = locationManager.userLocation
     }
@@ -168,6 +207,8 @@ final class MapViewModel: ObservableObject {
         fromCoordinate: CLLocationCoordinate2D? = nil,
         toCoordinate: CLLocationCoordinate2D? = nil
     ) async {
+        isLoadingRoute = true
+        defer { isLoadingRoute = false }
         
         let fromTrim = fromAddress.trimmingCharacters(in: .whitespacesAndNewlines)
         let toTrim = toAddress.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -254,16 +295,16 @@ final class MapViewModel: ObservableObject {
 
         let capturedRoute = route
         let capturedTolls = toll
-        Task {
-            await Task.yield()
-            tollsOnRoute = tollsNearRoute(route: capturedRoute, tolls: capturedTolls)
+        Task.detached(priority: .userInitiated) {
+            let result = MapViewModel.tollsNearRouteStatic(route: capturedRoute, tolls: capturedTolls)
+            await MainActor.run { self.tollsOnRoute = result }
         }
         totalPrice = 0
         hasResult = true
     }
 
-    
-    private func tollsNearRoute(route: AppRoute, tolls: [Vegobjekt], maxDistanceMeters: Double = 50) -> [Vegobjekt] {
+
+    private nonisolated static func tollsNearRouteStatic(route: AppRoute, tolls: [Vegobjekt], maxDistanceMeters: Double = 50) -> [Vegobjekt] {
         let polyline = route.polyline
         let count = polyline.pointCount
         guard count > 0 else { return [] }
@@ -319,7 +360,7 @@ final class MapViewModel: ObservableObject {
     }
 
     // Returns the cardinal bearing a directional toll expects, nil if non-directional
-    private func directionalBearing(for toll: Vegobjekt) -> Double? {
+    private nonisolated static func directionalBearing(for toll: Vegobjekt) -> Double? {
         let name = toll.displayName.lowercased()
         if name.contains("nordgående") { return 0 }
         if name.contains("sørgående")  { return 180 }
@@ -329,7 +370,7 @@ final class MapViewModel: ObservableObject {
     }
 
     // Compass bearing in degrees (0=N, 90=E, 180=S, 270=W)
-    private func bearing(from a: CLLocationCoordinate2D, to b: CLLocationCoordinate2D) -> Double {
+    private nonisolated static func bearing(from a: CLLocationCoordinate2D, to b: CLLocationCoordinate2D) -> Double {
         let lat1 = a.latitude  * .pi / 180
         let lat2 = b.latitude  * .pi / 180
         let dLon = (b.longitude - a.longitude) * .pi / 180
@@ -339,13 +380,13 @@ final class MapViewModel: ObservableObject {
     }
 
     // Smallest angular difference between two bearings (0–180)
-    private func angleDifference(_ a: Double, _ b: Double) -> Double {
+    private nonisolated static func angleDifference(_ a: Double, _ b: Double) -> Double {
         let diff = abs(a - b).truncatingRemainder(dividingBy: 360)
         return min(diff, 360 - diff)
     }
 
     // Minimum distance from point P to segment A→B using projection
-    private func distanceFromPoint(
+    private nonisolated static func distanceFromPoint(
         _ p: CLLocationCoordinate2D,
         toSegmentFrom a: CLLocationCoordinate2D,
         to b: CLLocationCoordinate2D

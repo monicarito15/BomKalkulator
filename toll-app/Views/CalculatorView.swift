@@ -105,6 +105,7 @@ struct CalculatorView: View {
             Task {
                 await mapVM.fetchTolls()
                 mapVM.updateUserLocation()
+                mapVM.updateNearbyTolls()
             }
         }
         .onDisappear {
@@ -401,10 +402,6 @@ struct CalculatorView: View {
                 .padding(.vertical, 12)
                 .background(colorScheme == .dark ? Color(.systemGray6) : .white)
 
-                Divider()
-                    .padding(.leading, 56)
-
-                autopassToggle
             }
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
@@ -412,27 +409,17 @@ struct CalculatorView: View {
                     .stroke(Color.gray.opacity(0.2), lineWidth: 1)
             )
             .padding(.horizontal, 16)
-        }
-    }
 
-    private var autopassToggle: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "checkmark.shield.fill")
-                .foregroundStyle(autopassOn ? .blue : .secondary)
-                .frame(width: 24)
-            
-            Text("Autopass")
-                .foregroundStyle(.primary)
-            
-            Spacer()
-            
-            Toggle("", isOn: $autopassOn)
-                .labelsHidden()
-                .tint(.blue)
+            HStack(spacing: 6) {
+                Image(systemName: "checkmark.shield.fill")
+                    .font(.caption)
+                    .foregroundStyle(.blue)
+                Text("All prices are AutoPASS rates")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 20)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(colorScheme == .dark ? Color(.systemGray6) : .white)
     }
 
     // Calculate Button

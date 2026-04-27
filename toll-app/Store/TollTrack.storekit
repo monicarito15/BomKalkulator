@@ -4,7 +4,7 @@
     {
       "displayPrice" : "2.99",
       "familyShareable" : false,
-      "internalID" : "no.carolina.toll-app.unlimited",
+      "internalID" : "no.carolina.toll_app.unlimited",
       "localizations" : [
         {
           "description" : "Unlock unlimited route searches in BomKalkulator.",
@@ -12,7 +12,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "no.carolina.toll-app.unlimited",
+      "productID" : "no.carolina.toll_app.unlimited",
       "referenceName" : "Unlimited Searches",
       "type" : "NonConsumable"
     }

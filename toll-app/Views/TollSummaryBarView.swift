@@ -145,12 +145,12 @@ struct TollSummaryBar: View {
                     
                     Divider()
                         .frame(height: 12)
-                    
+
                     HStack(spacing: 4) {
-                        Image(systemName: hasAutopass ? "checkmark.shield.fill" : "shield.slash.fill")
+                        Image(systemName: "checkmark.shield.fill")
                             .font(.caption)
-                            .foregroundStyle(hasAutopass ? .green : .gray)
-                        Text(hasAutopass ? "Autopass" : "No Autopass")
+                            .foregroundStyle(.blue)
+                        Text("AutoPASS")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
