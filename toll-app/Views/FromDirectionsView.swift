@@ -71,6 +71,9 @@ struct FromDirectionsView: View {
             }
             .onAppear {
                 searchText = ""
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    isSearchFocused = true
+                }
             }
             .task {
                 await viewModel.loadRecentSearch(using: modelContext)
