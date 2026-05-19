@@ -8,7 +8,7 @@ Norwegian toll calculator for iOS. Enter an origin and destination, and the app 
 
 - Toll pricing from NVDB data
 - Multiple alternative routes (up to 3) via OSRM and MapKit
-- Directional toll filtering — only charges the correct direction (nordgående/sørgående)
+- Directional toll filtering — only charges the correct direction (nordgående/sørgående/FS/MS and all NVDB direction suffixes)
 - Rush hour surcharge detection using per-station times from NVDB (falls back to 06:30–09:00 and 15:00–17:00)
 - Timesregel support — stations in the same group within 60 min: free (Første passering) or most expensive only (Dyreste passering)
 - Vehicle type support: car and motorcycle
@@ -24,7 +24,7 @@ Norwegian toll calculator for iOS. Enter an origin and destination, and the app 
 
 ## Pricing
 
-- **Free:** 10 route searches per month
+- **Free:** 5 route searches per month
 - **Unlimited:** 19 kr one-time purchase (StoreKit 2)
 
 ---
@@ -95,8 +95,10 @@ OpenStreetMap-based routing. Returns up to 3 real alternative routes. Falls back
 ```
 User submits route
     → OSRM + MapKit calculate alternative polylines
+    → Bounding box pre-filter to discard distant stations before distance check
     → Perpendicular distance check for each toll station (50m threshold)
-    → Directional filter (nordgående/sørgående/østgående/vestgående)
+    → Per-route toll result cache — instant on repeat route switches
+    → Directional filter (nordgående/sørgående/østgående/vestgående and FS/MS/FN/MN/FV/MV/FØ/MØ)
     → Prices calculated from NVDB toll data (takst, rushtidstakst)
     → Stations with Operatør_Id 100120 (Vegamot) or 100149 (Ranheim) multiplied by 1.12 to correct outdated NVDB data
     → Timesregel applied per passeringsgruppe

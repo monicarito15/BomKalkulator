@@ -59,3 +59,8 @@ Secrets.xcconfig
 
 # macOS
 .DS_Store
+
+# Internal docs
+../UPDATE_CHECKLIST.md
+../APP_STORE_CHECKLIST.md
+../APP_STORE_METADATA.md
