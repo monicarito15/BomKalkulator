@@ -21,6 +21,7 @@ final class MapViewModel: ObservableObject {
     @Published var hasResult: Bool = false
     @Published var totalPrice: Double = 0
     @Published var tollsOnRoute: [Vegobjekt] = []
+    @Published var isLoadingTolls: Bool = false
 
     @Published var isLoadingRoute: Bool = false
 
@@ -84,11 +85,15 @@ final class MapViewModel: ObservableObject {
         guard index < routes.count else { return }
         selectedRouteIndex = index  // UI responds instantly (route color changes)
         guard let route else { return }
+        isLoadingTolls = true
         let capturedRoute = route
         let capturedTolls = toll
         Task.detached(priority: .userInitiated) {
             let result = MapViewModel.tollsNearRouteStatic(route: capturedRoute, tolls: capturedTolls)
-            await MainActor.run { self.tollsOnRoute = result }
+            await MainActor.run {
+                self.tollsOnRoute = result
+                self.isLoadingTolls = false
+            }
         }
     }
 
