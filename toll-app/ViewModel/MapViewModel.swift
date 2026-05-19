@@ -25,6 +25,8 @@ final class MapViewModel: ObservableObject {
 
     @Published var isLoadingRoute: Bool = false
 
+    private var routeTollsCache: [ObjectIdentifier: [Vegobjekt]] = [:]
+
     // Cache de peajes cercanos — se actualiza solo cuando cambia la ubicación
     @Published var nearbyTollsCache: [Vegobjekt] = []
 
@@ -76,21 +78,28 @@ final class MapViewModel: ObservableObject {
         totalPrice = 0
         tollsOnRoute = []
         routes = []
+        routeTollsCache = [:]
         originCoordinate = nil
         destinationCoordinate = nil
-        
     }
     
     func selectRoute(index: Int) {
         guard index < routes.count else { return }
         selectedRouteIndex = index  // UI responds instantly (route color changes)
         guard let route else { return }
+        let cacheKey = ObjectIdentifier(route.polyline)
+        if let cached = routeTollsCache[cacheKey] {
+            tollsOnRoute = cached
+            return
+        }
+        
         isLoadingTolls = true
         let capturedRoute = route
         let capturedTolls = toll
         Task.detached(priority: .userInitiated) {
             let result = MapViewModel.tollsNearRouteStatic(route: capturedRoute, tolls: capturedTolls)
             await MainActor.run {
+                self.routeTollsCache[cacheKey] = result
                 self.tollsOnRoute = result
                 self.isLoadingTolls = false
             }
@@ -317,9 +326,20 @@ final class MapViewModel: ObservableObject {
         var coords = Array(repeating: CLLocationCoordinate2D(latitude: 0, longitude: 0), count: count)
         polyline.getCoordinates(&coords, range: NSRange(location: 0, length: count))
 
+        let pad = 0.05 // ~5 km margin in degrees
+        let minLat = coords.min(by: { $0.latitude  < $1.latitude  })!.latitude  - pad
+        let maxLat = coords.max(by: { $0.latitude  < $1.latitude  })!.latitude  + pad
+        let minLon = coords.min(by: { $0.longitude < $1.longitude })!.longitude - pad
+        let maxLon = coords.max(by: { $0.longitude < $1.longitude })!.longitude + pad
+        let nearbyTolls = tolls.filter {
+            guard let c = $0.lokasjon?.coordinates else { return false }
+            return c.latitude >= minLat && c.latitude <= maxLat
+                && c.longitude >= minLon && c.longitude <= maxLon
+        }
+
         var tollsWithPosition: [(toll: Vegobjekt, routeIndex: Int, distance: Double)] = []
 
-        for toll in tolls {
+        for toll in nearbyTolls {
             guard let c = toll.lokasjon?.coordinates else { continue }
 
             var closestIndex = -1
