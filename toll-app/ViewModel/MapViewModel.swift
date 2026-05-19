@@ -366,7 +366,15 @@ final class MapViewModel: ObservableObject {
         if name.contains("sørgående")  { return 180 }
         if name.contains("østgående")  { return 90 }
         if name.contains("vestgående") { return 270 }
-        return nil
+        // NVDB direction suffixes: FS/FN/FV/FØ/MS/MN/MV/MØ
+        let suffix = name.components(separatedBy: " ").last ?? ""
+        switch suffix {
+        case "fs", "mn": return 0    // fra sør / mot nord = northbound
+        case "ms", "fn": return 180  // mot sør / fra nord = southbound
+        case "fv", "mø": return 90   // fra vest / mot øst = eastbound
+        case "mv", "fø": return 270  // mot vest / fra øst = westbound
+        default: return nil
+        }
     }
 
     // Compass bearing in degrees (0=N, 90=E, 180=S, 270=W)
