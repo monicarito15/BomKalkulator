@@ -14,14 +14,12 @@ struct HistoryView: View {
     var searchHistory: [SearchHistoryItem]
     var onSelectSearch: (SearchHistoryItem) -> Void
 
-    private static let freeLimit = 3
-
     private var visibleHistory: [SearchHistoryItem] {
-        purchaseManager.isPremium ? searchHistory : Array(searchHistory.prefix(Self.freeLimit))
+        purchaseManager.isPremium ? searchHistory : Array(searchHistory.prefix(PurchaseManager.freeSearchLimit))
     }
 
     private var hiddenCount: Int {
-        purchaseManager.isPremium ? 0 : max(0, searchHistory.count - Self.freeLimit)
+        purchaseManager.isPremium ? 0 : max(0, searchHistory.count - PurchaseManager.freeSearchLimit)
     }
 
     private var cardBackground: Color {
