@@ -17,7 +17,7 @@ struct TollService {
     static let shared = TollService()
     
     func getTolls() async throws -> [Vegobjekt] {
-        let endpoint = "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/45?inkluder=lokasjon&inkluder=egenskaper"
+        let endpoint = "https://nvdbapiles.atlas.vegvesen.no/vegobjekter/api/v4/vegobjekter/45?inkluder=lokasjon&inkluder=egenskaper&inkluderAntall=false"
         
         guard let url = URL(string: endpoint) else {
             throw GHError.invalidURL

@@ -44,11 +44,7 @@ class Vegobjekt: Identifiable {
     }
                                                                                                                                                                                                              
     var isOutdatedNVDBStation: Bool {
-        guard let operatorId = egenskaper.first(where: { $0.navn == "Operatør_Id" })
-            .flatMap({ Int($0.verdi ?? "") }) else { return false }
-        // 100120 = Vegamot AS (Trondheim snitt stations)
-        // 100149 = Ranheim standalone (operator changed 2023-11-01, NVDB not updated)
-        return operatorId == 100120 || operatorId == 100149
+        return false
     }
 
     var timesregel: String? {
