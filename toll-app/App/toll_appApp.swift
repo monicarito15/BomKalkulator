@@ -15,7 +15,8 @@ struct toll_appApp: App {
             Geometri.self,
             RecentSearch.self,
             SearchHistoryItem.self,
-            FeeCalculation.self
+            FeeCalculation.self,
+            WorkTrip.self
         ])
         
         do {

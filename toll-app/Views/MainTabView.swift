@@ -43,24 +43,29 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Travel", systemImage: "magnifyingglass.circle.fill")
                 }
-            
                 .tag(0)
+
             HistoryView(onSelectSearch: { historyItem in
                 selectedHistoryItem = historyItem
                 selectedTab = 0
             })
             .environmentObject(purchaseManager)
-            
                 .tabItem {
                     Label("History", systemImage: "car.fill")
                 }
                 .tag(1)
-            SettingsView()
-                .tabItem{
-                    Label("settings", systemImage: "gearshape.fill")
+
+            WorkTripView()
+                .tabItem {
+                    Label("Work Trip", systemImage: "steeringwheel")
                 }
                 .tag(2)
-            
+
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
+                .tag(3)
         }
         .preferredColorScheme(AppAppearance(rawValue: appearance)?.colorScheme)
     }
