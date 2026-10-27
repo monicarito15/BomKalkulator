@@ -111,8 +111,10 @@ final class WorkTripViewModel: ObservableObject {
         cancelCountdown()
         showResumeNotification = false
         resumeCountdown = 0
-        // Stay paused but reset speed counter so it doesn't immediately re-trigger
         speedAboveThresholdSeconds = 0
+        stopTimer()
+        if pauseStartTime == nil { pauseStartTime = Date() }
+        tripState = .autoPaused
         startLocationTracking(monitoringForResume: true)
     }
 
