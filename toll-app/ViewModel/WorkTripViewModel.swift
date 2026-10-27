@@ -25,7 +25,7 @@ final class WorkTripViewModel: ObservableObject {
     private var countdownTask: Task<Void, Never>?
     private var tripStartTime: Date?
     private var pauseStartTime: Date?
-    private var totalPausedSeconds: Int = 0
+    private var totalPausedTime: TimeInterval = 0
     private var lastLocation: CLLocation?
     private var lastGeocodedAt: Date = .distantPast
     private var locationTask: Task<Void, Never>?
@@ -57,7 +57,7 @@ final class WorkTripViewModel: ObservableObject {
     func startTrip() {
         tripState = .active
         tripStartTime = Date()
-        totalPausedSeconds = 0
+        totalPausedTime = 0
         elapsedSeconds = 0
         distanceKm = 0
         tollCount = 0
@@ -67,6 +67,7 @@ final class WorkTripViewModel: ObservableObject {
         startTimer()
         startLocationTracking(monitoringForResume: false)
     }
+
 
     func endTrip(context: ModelContext, driverName: String, company: String) {
         stopTimer()
@@ -96,7 +97,7 @@ final class WorkTripViewModel: ObservableObject {
 
     func resumeTrip() {
         if let pause = pauseStartTime {
-            totalPausedSeconds += Int(Date().timeIntervalSince(pause))
+            totalPausedTime += Date().timeIntervalSince(pause)
         }
         pauseStartTime = nil
         speedAboveThresholdSeconds = 0
@@ -120,6 +121,9 @@ final class WorkTripViewModel: ObservableObject {
 
     private func triggerAutoResumeCountdown() {
         guard autoResumeEnabled else { return }
+        stopTimer()
+        stopLocationTracking()
+        if pauseStartTime == nil { pauseStartTime = Date() }
         showResumeNotification = true
         resumeCountdown = Self.countdownDuration
         countdownTask = Task {
@@ -148,8 +152,8 @@ final class WorkTripViewModel: ObservableObject {
             guard let self else { return }
             Task { @MainActor in
                 guard let start = self.tripStartTime else { return }
-                let raw = Int(Date().timeIntervalSince(start))
-                self.elapsedSeconds = max(0, raw - self.totalPausedSeconds)
+                let raw = Date().timeIntervalSince(start)
+                self.elapsedSeconds = max(0, Int(raw - self.totalPausedTime))
             }
         }
     }
@@ -233,6 +237,7 @@ final class WorkTripViewModel: ObservableObject {
         totalTollCost = 0
         lastLocation = nil
         tripStartTime = nil
+        totalPausedTime = 0
         currentAddress = ""
         speedAboveThresholdSeconds = 0
         showResumeNotification = false

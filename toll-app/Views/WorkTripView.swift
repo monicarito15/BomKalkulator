@@ -159,11 +159,19 @@ struct WorkTripView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
 
-                    Button("Set on pause") {
-                        vm.pauseTrip()
+                    if !vm.showResumeNotification {
+                        Button {
+                            vm.pauseTrip()
+                        } label: {
+                            Label("Set on pause", systemImage: "pause.fill")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.primary)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(Color(.systemGray5))
+                                .clipShape(Capsule())
+                        }
                     }
-                    .font(.subheadline)
-                    .foregroundStyle(.blue)
 
                     #if DEBUG
                     Button("⚙ Test resume banner") {
@@ -175,7 +183,7 @@ struct WorkTripView: View {
                 }
                 .padding(.vertical, 8)
 
-                if !vm.currentAddress.isEmpty {
+                if !vm.currentAddress.isEmpty && !vm.showResumeNotification {
                     currentPositionCard
                         .padding(.horizontal, 16)
                 }
