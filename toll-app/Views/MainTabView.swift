@@ -45,6 +45,12 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
+            WorkTripView()
+                .tabItem {
+                    Label("Work Trip", systemImage: "steeringwheel")
+                }
+                .tag(1)
+
             HistoryView(onSelectSearch: { historyItem in
                 selectedHistoryItem = historyItem
                 selectedTab = 0
@@ -52,12 +58,6 @@ struct MainTabView: View {
             .environmentObject(purchaseManager)
                 .tabItem {
                     Label("History", systemImage: "car.fill")
-                }
-                .tag(1)
-
-            WorkTripView()
-                .tabItem {
-                    Label("Work Trip", systemImage: "steeringwheel")
                 }
                 .tag(2)
 

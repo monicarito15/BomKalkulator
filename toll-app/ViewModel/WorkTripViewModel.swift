@@ -16,21 +16,36 @@ final class WorkTripViewModel: ObservableObject {
     @Published var tollCount: Int = 0
     @Published var totalTollCost: Double = 0.0
     @Published var showResumeNotification: Bool = false
+    @Published var resumeCountdown: Int = 0
     @Published var currentAddress: String = ""
 
+    static let countdownDuration = 10
+
     private var timer: Timer?
+    private var countdownTask: Task<Void, Never>?
     private var tripStartTime: Date?
     private var pauseStartTime: Date?
     private var totalPausedSeconds: Int = 0
     private var lastLocation: CLLocation?
     private var lastGeocodedAt: Date = .distantPast
     private var locationTask: Task<Void, Never>?
+    private var speedAboveThresholdSeconds: Int = 0
+
+    private static let autoResumeSpeedThreshold: Double = 2.78  // 10 km/h in m/s
+    private static let autoResumeRequiredSeconds: Int = 10
 
     var formattedElapsed: String {
         let h = elapsedSeconds / 3600
         let m = (elapsedSeconds % 3600) / 60
-        if h > 0 { return "\(h) h \(m) min" }
-        return "\(m) min"
+        let s = elapsedSeconds % 60
+        if h > 0 { return String(format: "%d:%02d:%02d", h, m, s) }
+        return String(format: "%d:%02d", m, s)
+    }
+
+    var autoResumeEnabled: Bool {
+        UserDefaults.standard.object(forKey: "autoResume") == nil
+            ? true
+            : UserDefaults.standard.bool(forKey: "autoResume")
     }
 
     func startTrip() {
@@ -42,13 +57,15 @@ final class WorkTripViewModel: ObservableObject {
         tollCount = 0
         totalTollCost = 0
         lastLocation = nil
+        speedAboveThresholdSeconds = 0
         startTimer()
-        startLocationTracking()
+        startLocationTracking(monitoringForResume: false)
     }
 
     func endTrip(context: ModelContext, driverName: String, company: String) {
         stopTimer()
         stopLocationTracking()
+        cancelCountdown()
 
         let trip = WorkTrip(driverName: driverName, company: company)
         trip.startTime = tripStartTime ?? Date()
@@ -64,31 +81,58 @@ final class WorkTripViewModel: ObservableObject {
 
     func pauseTrip() {
         stopTimer()
-        stopLocationTracking()
+        cancelCountdown()
         pauseStartTime = Date()
         tripState = .autoPaused
+        speedAboveThresholdSeconds = 0
+        startLocationTracking(monitoringForResume: true)
     }
 
-    func resumeTrip(isAuto: Bool = false) {
+    func resumeTrip() {
         if let pause = pauseStartTime {
             totalPausedSeconds += Int(Date().timeIntervalSince(pause))
         }
         pauseStartTime = nil
+        speedAboveThresholdSeconds = 0
+        showResumeNotification = false
+        resumeCountdown = 0
         tripState = .active
         startTimer()
-        startLocationTracking()
-        if isAuto {
-            showResumeNotification = true
-            Task {
-                try? await Task.sleep(nanoseconds: 5_000_000_000)
-                showResumeNotification = false
+        startLocationTracking(monitoringForResume: false)
+    }
+
+    func cancelAutoResume() {
+        cancelCountdown()
+        showResumeNotification = false
+        resumeCountdown = 0
+        // Stay paused but reset speed counter so it doesn't immediately re-trigger
+        speedAboveThresholdSeconds = 0
+        startLocationTracking(monitoringForResume: true)
+    }
+
+    private func triggerAutoResumeCountdown() {
+        guard autoResumeEnabled else { return }
+        showResumeNotification = true
+        resumeCountdown = Self.countdownDuration
+        countdownTask = Task {
+            do {
+                while resumeCountdown > 0 {
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                    guard !Task.isCancelled else { return }
+                    resumeCountdown -= 1
+                }
+                if !Task.isCancelled {
+                    resumeTrip()
+                }
+            } catch {
+                // task cancelled
             }
         }
     }
 
-    func cancelAutoResume() {
-        showResumeNotification = false
-        pauseTrip()
+    private func cancelCountdown() {
+        countdownTask?.cancel()
+        countdownTask = nil
     }
 
     private func startTimer() {
@@ -107,7 +151,7 @@ final class WorkTripViewModel: ObservableObject {
         timer = nil
     }
 
-    private func startLocationTracking() {
+    private func startLocationTracking(monitoringForResume: Bool) {
         locationTask?.cancel()
         locationTask = Task { [weak self] in
             guard let self else { return }
@@ -117,17 +161,32 @@ final class WorkTripViewModel: ObservableObject {
                     guard !Task.isCancelled else { return }
                     guard let location = update.location else { continue }
 
-                    if let last = self.lastLocation {
-                        let delta = location.distance(from: last) / 1000.0
-                        if delta > 0.01 {
-                            self.distanceKm += delta
+                    if monitoringForResume {
+                        guard !self.showResumeNotification else { continue }
+                        let speed = location.speed
+                        if speed > Self.autoResumeSpeedThreshold {
+                            self.speedAboveThresholdSeconds += 1
+                            if self.speedAboveThresholdSeconds >= Self.autoResumeRequiredSeconds
+                                && self.tripState == .autoPaused {
+                                self.triggerAutoResumeCountdown()
+                                return
+                            }
+                        } else {
+                            self.speedAboveThresholdSeconds = 0
                         }
-                    }
-                    self.lastLocation = location
+                    } else {
+                        if let last = self.lastLocation {
+                            let delta = location.distance(from: last) / 1000.0
+                            if delta > 0.01 {
+                                self.distanceKm += delta
+                            }
+                        }
+                        self.lastLocation = location
 
-                    if Date().timeIntervalSince(self.lastGeocodedAt) > 30 {
-                        self.lastGeocodedAt = Date()
-                        await self.reverseGeocode(location)
+                        if Date().timeIntervalSince(self.lastGeocodedAt) > 30 {
+                            self.lastGeocodedAt = Date()
+                            await self.reverseGeocode(location)
+                        }
                     }
                 }
             } catch {
@@ -167,5 +226,8 @@ final class WorkTripViewModel: ObservableObject {
         lastLocation = nil
         tripStartTime = nil
         currentAddress = ""
+        speedAboveThresholdSeconds = 0
+        showResumeNotification = false
+        resumeCountdown = 0
     }
 }

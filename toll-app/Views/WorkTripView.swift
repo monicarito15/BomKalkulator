@@ -15,7 +15,7 @@ struct WorkTripView: View {
 
     var body: some View {
         NavigationView {
-            ZStack(alignment: .top) {
+            ZStack(alignment: .bottom) {
                 Color(.systemGroupedBackground).ignoresSafeArea()
 
                 Group {
@@ -32,14 +32,14 @@ struct WorkTripView: View {
 
                 if vm.showResumeNotification {
                     resumeNotificationBanner
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                         .zIndex(10)
-                        .padding(.top, 8)
+                        .padding(.bottom, 12)
                 }
             }
             .navigationTitle("Work Trip")
             .navigationBarTitleDisplayMode(.large)
-            .animation(.easeInOut(duration: 0.25), value: vm.showResumeNotification)
+            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: vm.showResumeNotification)
         }
     }
 
@@ -112,7 +112,7 @@ struct WorkTripView: View {
                 HStack(spacing: 12) {
                     statCard(
                         label: "DISTANCE",
-                        value: String(format: "%.1f", vm.distanceKm),
+                        value: String(format: "%.2f", vm.distanceKm),
                         unit: "km"
                     )
                     statCard(
@@ -155,6 +155,24 @@ struct WorkTripView: View {
                     }
                     .font(.subheadline)
                     .foregroundStyle(.blue)
+
+                    #if DEBUG
+                    Button("⚙ Test resume banner") {
+                        withAnimation {
+                            vm.showResumeNotification = true
+                            vm.resumeCountdown = WorkTripViewModel.countdownDuration
+                        }
+                        Task {
+                            for i in stride(from: WorkTripViewModel.countdownDuration, through: 0, by: -1) {
+                                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                                withAnimation { vm.resumeCountdown = i }
+                            }
+                            withAnimation { vm.showResumeNotification = false }
+                        }
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    #endif
                 }
                 .padding(.vertical, 8)
 
@@ -302,39 +320,42 @@ struct WorkTripView: View {
     }
 
     private var resumeNotificationBanner: some View {
-        HStack(spacing: 10) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.blue)
-                    .frame(width: 36, height: 36)
-                Text("BK")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.white)
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Looks like you're moving")
+                        .font(.subheadline.weight(.semibold))
+                    Text("Your trip resumes in \(vm.resumeCountdown)s...")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                CountdownCircle(
+                    countdown: vm.resumeCountdown,
+                    total: WorkTripViewModel.countdownDuration
+                )
             }
 
-            VStack(alignment: .leading, spacing: 1) {
-                Text("BomKalkulator")
-                    .font(.caption.weight(.semibold))
-                Text("Trip resumed automatically")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Button("Cancel") {
+            Button {
                 withAnimation {
                     vm.cancelAutoResume()
                 }
+            } label: {
+                Text("Not ready yet? Keep it paused.")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color(.systemGray5))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            .font(.subheadline)
-            .foregroundStyle(.blue)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(16)
         .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
-        .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: -4)
         .padding(.horizontal, 16)
     }
 
@@ -347,7 +368,7 @@ struct WorkTripView: View {
 
             HStack(alignment: .lastTextBaseline, spacing: 3) {
                 Text(value)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.system(size: 28, weight: .bold, design: .rounded).monospacedDigit())
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                 if let unit {
@@ -362,6 +383,34 @@ struct WorkTripView: View {
         .background(cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.15), lineWidth: 1))
+    }
+}
+
+struct CountdownCircle: View {
+    let countdown: Int
+    let total: Int
+
+    private var progress: CGFloat {
+        total > 0 ? CGFloat(countdown) / CGFloat(total) : 0
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(Color(.systemGray4), lineWidth: 3)
+                .frame(width: 44, height: 44)
+
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(Color.blue, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .frame(width: 44, height: 44)
+                .animation(.linear(duration: 1), value: progress)
+
+            Text("\(countdown)")
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+        }
     }
 }
 
