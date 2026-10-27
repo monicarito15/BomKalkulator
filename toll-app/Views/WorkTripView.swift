@@ -8,6 +8,7 @@ struct WorkTripView: View {
 
     @AppStorage("driverName") private var driverName: String = ""
     @AppStorage("companyName") private var companyName: String = ""
+    @State private var showEndTripAlert = false
 
     private var cardBackground: Color {
         colorScheme == .dark ? Color(.systemGray6) : .white
@@ -40,6 +41,14 @@ struct WorkTripView: View {
             .navigationTitle("Work Trip")
             .navigationBarTitleDisplayMode(.large)
             .animation(.spring(response: 0.4, dampingFraction: 0.8), value: vm.showResumeNotification)
+            .alert("Stop this trip?", isPresented: $showEndTripAlert) {
+                Button("Yes, stop and save", role: .destructive) {
+                    vm.endTrip(context: modelContext, driverName: driverName, company: companyName)
+                }
+                Button("Keep going", role: .cancel) {}
+            } message: {
+                Text("Your trip will be saved and you won't be able to continue it.")
+            }
         }
     }
 
@@ -128,7 +137,7 @@ struct WorkTripView: View {
 
                 VStack(spacing: 10) {
                     Button {
-                        vm.endTrip(context: modelContext, driverName: driverName, company: companyName)
+                        showEndTripAlert = true
                     } label: {
                         ZStack {
                             Circle()
@@ -158,17 +167,7 @@ struct WorkTripView: View {
 
                     #if DEBUG
                     Button("⚙ Test resume banner") {
-                        withAnimation {
-                            vm.showResumeNotification = true
-                            vm.resumeCountdown = WorkTripViewModel.countdownDuration
-                        }
-                        Task {
-                            for i in stride(from: WorkTripViewModel.countdownDuration, through: 0, by: -1) {
-                                try? await Task.sleep(nanoseconds: 1_000_000_000)
-                                withAnimation { vm.resumeCountdown = i }
-                            }
-                            withAnimation { vm.showResumeNotification = false }
-                        }
+                        vm.debugTriggerAutoResume()
                     }
                     .font(.caption)
                     .foregroundStyle(.orange)
@@ -257,7 +256,7 @@ struct WorkTripView: View {
                 }
 
                 Button {
-                    vm.endTrip(context: modelContext, driverName: driverName, company: companyName)
+                    showEndTripAlert = true
                 } label: {
                     Text("End trip")
                         .font(.subheadline.weight(.semibold))

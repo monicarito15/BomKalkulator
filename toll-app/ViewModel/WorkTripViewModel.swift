@@ -42,6 +42,12 @@ final class WorkTripViewModel: ObservableObject {
         return String(format: "%d:%02d", m, s)
     }
 
+    #if DEBUG
+    func debugTriggerAutoResume() {
+        triggerAutoResumeCountdown()
+    }
+    #endif
+
     var autoResumeEnabled: Bool {
         UserDefaults.standard.object(forKey: "autoResume") == nil
             ? true
