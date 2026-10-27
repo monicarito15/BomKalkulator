@@ -305,12 +305,12 @@ struct CalculatorView: View {
                     .foregroundStyle(.secondary)
                     .frame(width: 20)
 
-                chip(icon: "car.fill", label: "Car", isSelected: selectedVehicleType == .car) {
-                    selectedVehicleType = .car
-                }
-                chip(icon: "motorcycle.fill", label: "Motorcycle", isSelected: selectedVehicleType == .motorcycle) {
-                    selectedVehicleType = .motorcycle
-                }
+                segmentedPicker(
+                    options: [
+                        (icon: "car.fill", label: "Car", isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car }),
+                        (icon: "motorcycle.fill", label: "Motorcycle", isSelected: selectedVehicleType == .motorcycle, action: { selectedVehicleType = .motorcycle })
+                    ]
+                )
             }
             .padding(.horizontal, 16)
 
@@ -321,35 +321,43 @@ struct CalculatorView: View {
                     .foregroundStyle(.secondary)
                     .frame(width: 20)
 
-                chip(icon: "fuelpump.fill", label: "Gas", isSelected: selectedFuelType == .gas) {
-                    selectedFuelType = .gas
-                }
-                chip(icon: "bolt.fill", label: "Electric", isSelected: selectedFuelType == .electric) {
-                    selectedFuelType = .electric
-                }
-                chip(icon: "fuelpump.fill", label: "Diesel", isSelected: selectedFuelType == .diesel) {
-                    selectedFuelType = .diesel
-                }
+                segmentedPicker(
+                    options: [
+                        (icon: "fuelpump.fill", label: "Gas", isSelected: selectedFuelType == .gas, action: { selectedFuelType = .gas }),
+                        (icon: "bolt.fill", label: "Electric", isSelected: selectedFuelType == .electric, action: { selectedFuelType = .electric }),
+                        (icon: "fuelpump.fill", label: "Diesel", isSelected: selectedFuelType == .diesel, action: { selectedFuelType = .diesel })
+                    ]
+                )
             }
             .padding(.horizontal, 16)
         }
     }
 
-    private func chip(icon: String, label: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.system(size: 13, weight: .medium))
-                Text(label)
-                    .font(.system(size: 14, weight: .medium))
+    private func segmentedPicker(options: [(icon: String, label: String, isSelected: Bool, action: () -> Void)]) -> some View {
+        HStack(spacing: 2) {
+            ForEach(options.indices, id: \.self) { i in
+                let opt = options[i]
+                Button(action: opt.action) {
+                    HStack(spacing: 5) {
+                        Image(systemName: opt.icon)
+                            .font(.system(size: 12, weight: .medium))
+                        Text(opt.label)
+                            .font(.system(size: 13, weight: .medium))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(opt.isSelected ? Color(.systemBackground) : Color.clear)
+                    .foregroundStyle(opt.isSelected ? .primary : .secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                    .shadow(color: opt.isSelected ? Color.black.opacity(0.08) : Color.clear, radius: 2, x: 0, y: 1)
+                }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(isSelected ? Color.blue : Color(.systemGray5))
-            .foregroundStyle(isSelected ? .white : .primary)
-            .clipShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .padding(3)
+        .background(Color(.systemGray5))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .frame(maxWidth: .infinity)
     }
 
     // Vehicle Details Section
@@ -362,41 +370,37 @@ struct CalculatorView: View {
                 .padding(.horizontal, 20)
 
             VStack(spacing: 0) {
-                // Vehicle chips row
-                HStack(spacing: 8) {
+                // Vehicle segmented row
+                HStack(spacing: 12) {
                     Image(systemName: "car.fill")
                         .foregroundStyle(.secondary)
                         .frame(width: 24)
-                    chip(icon: "car.fill", label: "Car", isSelected: selectedVehicleType == .car) {
-                        selectedVehicleType = .car
-                    }
-                    chip(icon: "motorcycle.fill", label: "Motorcycle", isSelected: selectedVehicleType == .motorcycle) {
-                        selectedVehicleType = .motorcycle
-                    }
-                    Spacer()
+                    segmentedPicker(
+                        options: [
+                            (icon: "car.fill", label: "Car", isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car }),
+                            (icon: "motorcycle.fill", label: "Motorcycle", isSelected: selectedVehicleType == .motorcycle, action: { selectedVehicleType = .motorcycle })
+                        ]
+                    )
                 }
                 .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                .padding(.vertical, 12)
                 .background(colorScheme == .dark ? Color(.systemGray6) : .white)
 
                 Divider()
                     .padding(.leading, 56)
 
-                // Fuel chips row
-                HStack(spacing: 8) {
+                // Fuel segmented row
+                HStack(spacing: 12) {
                     Image(systemName: "fuelpump.fill")
                         .foregroundStyle(.secondary)
                         .frame(width: 24)
-                    chip(icon: "fuelpump.fill", label: "Gas", isSelected: selectedFuelType == .gas) {
-                        selectedFuelType = .gas
-                    }
-                    chip(icon: "bolt.fill", label: "Electric", isSelected: selectedFuelType == .electric) {
-                        selectedFuelType = .electric
-                    }
-                    chip(icon: "fuelpump.fill", label: "Diesel", isSelected: selectedFuelType == .diesel) {
-                        selectedFuelType = .diesel
-                    }
-                    Spacer()
+                    segmentedPicker(
+                        options: [
+                            (icon: "fuelpump.fill", label: "Gas", isSelected: selectedFuelType == .gas, action: { selectedFuelType = .gas }),
+                            (icon: "bolt.fill", label: "Electric", isSelected: selectedFuelType == .electric, action: { selectedFuelType = .electric }),
+                            (icon: "fuelpump.fill", label: "Diesel", isSelected: selectedFuelType == .diesel, action: { selectedFuelType = .diesel })
+                        ]
+                    )
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)

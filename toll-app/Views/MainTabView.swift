@@ -17,20 +17,11 @@ struct MainTabView: View {
 
     var body: some View {
         //logica para resetear el sheet si ya esta abierto
-        let tabBinding = Binding<Int>( // Create a binding to monitor tab changes
+        let tabBinding = Binding<Int>(
             get: { selectedTab },
             set: { newValue in
-                if newValue == 0 {
-                    if didAppearOnce {
-                        showSheet = false // cierra el sheet si ya se habia abierto antes
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // espera 0.1 segundos para que el swiftui tenga para procesar el cambio de tab
-                            showSheet = true
-                            
-                        }
-                    } else {
-                        showSheet = true // la primera vez que se abre el tab, abre el sheet
-                        didAppearOnce = true
-                    }
+                if newValue == 0 && selectedTab == 0 {
+                    showSheet = false
                 }
                 selectedTab = newValue
             }

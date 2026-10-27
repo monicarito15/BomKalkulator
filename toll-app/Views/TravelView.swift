@@ -45,7 +45,11 @@ struct TravelView: View {
             hasAutopass: hasAutopass,
             mapVM: vm
         )
-        
+        .safeAreaInset(edge: .bottom) {
+            if !showSheet {
+                calculateCard
+            }
+        }
         .sheet(isPresented: $showSheet) {
             VStack {
                 CalculatorView(
@@ -118,7 +122,10 @@ struct TravelView: View {
             latest.tollCount = tolls.count
             try? modelContext.save()
         }
-        .onChange(of: selectedHistoryItem) { oldValue, newValue in
+        .onChange(of: vm.hasResult) { _, hasResult in
+            if hasResult { showSheet = false }
+        }
+        .onChange(of: selectedHistoryItem) { _, newValue in
             // Cuando se selecciona un item del historial, rellenar los campos
             if let historyItem = newValue {
                 from = historyItem.fromAddress
@@ -136,6 +143,43 @@ struct TravelView: View {
             }
         }
     }
-        
+
+    private var calculateCard: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                Image(systemName: "magnifyingglass.circle.fill")
+                    .font(.system(size: 36))
+                    .foregroundStyle(.blue)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Calculate toll costs")
+                        .font(.headline)
+                    Text("Find price, time and toll stations for your route.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+            }
+
+            Button {
+                showSheet = true
+            } label: {
+                Text("Calculate route")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Color.blue)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
+        }
+        .padding(16)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -2)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
 }
 
