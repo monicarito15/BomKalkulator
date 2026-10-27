@@ -29,6 +29,12 @@ struct SettingsView: View {
     @AppStorage("appAppearance") private var appearance: String = AppAppearance.automatic.rawValue
     @AppStorage("defaultVehicle") private var defaultVehicle: String = VehicleType.car.rawValue
     @AppStorage("defaultFuel") private var defaultFuel: String = FuelType.gas.rawValue
+    @AppStorage("driverName") private var driverName: String = ""
+    @AppStorage("companyName") private var companyName: String = ""
+    @AppStorage("accountantEmail") private var accountantEmail: String = ""
+    @AppStorage("reportReminder") private var reportReminder: String = "weekly"
+    @AppStorage("restAlertInterval") private var restAlertInterval: String = "3"
+    @AppStorage("autoResume") private var autoResume: Bool = true
     @EnvironmentObject private var purchaseManager: PurchaseManager
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.modelContext) private var modelContext
@@ -42,6 +48,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
+                workTripSection
                 appearanceSection
                 defaultsSection
                 purchasesSection
@@ -53,6 +60,98 @@ struct SettingsView: View {
         }
     }
     
+    // Work Trip
+    private var workTripSection: some View {
+        Section {
+            HStack(spacing: 12) {
+                Image(systemName: "person.fill")
+                    .foregroundStyle(.blue)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Driver name")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    TextField("Your name", text: $driverName)
+                        .font(.body)
+                }
+            }
+
+            HStack(spacing: 12) {
+                Image(systemName: "building.2.fill")
+                    .foregroundStyle(.blue)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Company")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    TextField("Company name", text: $companyName)
+                        .font(.body)
+                }
+            }
+
+            HStack(spacing: 12) {
+                Image(systemName: "envelope.fill")
+                    .foregroundStyle(.blue)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Accountant email")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    TextField("email@example.com", text: $accountantEmail)
+                        .font(.body)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                }
+            }
+
+            HStack(spacing: 12) {
+                Image(systemName: "bell.fill")
+                    .foregroundStyle(.blue)
+                    .frame(width: 24)
+                Text("Report reminder")
+                Spacer()
+                Picker("", selection: $reportReminder) {
+                    Text("Daily").tag("daily")
+                    Text("Weekly").tag("weekly")
+                    Text("Monthly").tag("monthly")
+                }
+                .pickerStyle(.menu)
+            }
+
+            HStack(spacing: 12) {
+                Image(systemName: "clock.fill")
+                    .foregroundStyle(.blue)
+                    .frame(width: 24)
+                Text("Rest alert")
+                Spacer()
+                Picker("", selection: $restAlertInterval) {
+                    Text("2 h").tag("2")
+                    Text("3 h").tag("3")
+                    Text("4 h").tag("4")
+                    Text("Off").tag("off")
+                }
+                .pickerStyle(.menu)
+            }
+
+            HStack(spacing: 12) {
+                Image(systemName: "arrow.clockwise")
+                    .foregroundStyle(.blue)
+                    .frame(width: 24)
+                Text("Auto-resume")
+                Spacer()
+                Toggle("", isOn: $autoResume)
+                    .labelsHidden()
+            }
+        } header: {
+            Text("WORK TRIP")
+                .font(.caption)
+                .fontWeight(.semibold)
+        } footer: {
+            Text("Used in the Work Trip tab and your PDF reports.")
+                .font(.caption2)
+        }
+    }
+
     // Appearance
     private var appearanceSection: some View {
         Section {
