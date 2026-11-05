@@ -94,6 +94,26 @@ class Vegobjekt: Identifiable {
                (total >= afternoon.start && total < afternoon.end)
     }
 
+    // EV multiplier per operator (what fraction of normal price EV pays).
+    // Norwegian law minimum: EV pays at most 70% (30% discount).
+    // Source: NVDB API + elvio.no, verified Oct 2026.
+    var evMultiplier: Double {
+        guard let verdi = egenskaper.first(where: { $0.navn == "Operatør_Id" })?.verdi,
+              let opId = Int(verdi) else { return 0.5 }
+        switch opId {
+        case 100140:                    // Fjellinjen AS — Oslo/Bærum
+            return 0.30
+        case 100126:                    // Ferde AS — Bomringen Bergen
+            return 0.30
+        case 100014:                    // Ferde AS — Bymiljøpakken Nord Jæren (Stavanger)
+            return 0.30
+        case 100107, 100120, 100122, 100124: // Vegamot AS — Trondheim + branches
+            return 0.70
+        default:
+            return 0.50
+        }
+    }
+
     func price(vehicle: VehicleType, fuel: FuelType, date: Date) -> Double? {
         guard let base = normalPriceCar else { return nil }
 
@@ -107,7 +127,7 @@ class Vegobjekt: Identifiable {
 
         switch fuel {
         case .electric:
-            return carPrice * 0.5
+            return carPrice * evMultiplier
         default:
             return carPrice
         }

@@ -11,8 +11,8 @@ Norwegian toll calculator for iOS. Enter an origin and destination, and the app 
 - Directional toll filtering — only charges the correct direction (nordgående/sørgående/FS/MS and all NVDB direction suffixes)
 - Rush hour surcharge detection using per-station times from NVDB (falls back to 06:30–09:00 and 15:00–17:00)
 - Timesregel support — stations in the same group within 60 min: free (Første passering) or most expensive only (Dyreste passering)
-- Vehicle type support: car and motorcycle
-- Fuel type support: petrol, diesel, and electric — electric vehicles receive a 50% discount on the AutoPASS rate (Norwegian law minimum); petrol and diesel pay the standard AutoPASS rate
+- Vehicle type support: car and varebil (light commercial van / stor bil class)
+- Fuel type support: petrol/diesel (same AutoPASS rate) and electric — EV discount varies by operator (30–70%); Oslo, Bergen and Stavanger: 70% discount; Trondheim: 30% discount; all other operators: 50% discount
 - 24-hour price cache with offline fallback and estimated price indicator
 - Search history stored locally on device
 - Recent address suggestions
@@ -113,6 +113,8 @@ User submits route
 - Trondheim (Vegamot AS, operator 100120) and Ranheim (operator 100149) use a hardcoded 1.12× price correction — NVDB not updated since Feb 2024. Remove when NVDB is updated.
 - Prices are based on NVDB data and may not reflect the latest AutoPASS rates. A disclaimer is shown in the route details sheet.
 - First launch requires internet to download the toll station database.
+- Lastebil (heavy trucks > 3.5t) are not supported — they use a separate AutoPASS system for heavy vehicles (AutoPASS for tunge kjøretøy) with dedicated hardware and are outside the scope of this app.
+- EV discounts are applied per-operator based on a hardcoded table (`Operatør_Id`). Operators not in the table default to 50%. Update the table in `Vegobjekt.evMultiplier` when operators change their rates.
 
 ---
 
