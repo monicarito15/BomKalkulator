@@ -15,6 +15,7 @@ struct ToDirectionsView: View {
     @Binding var isFromCurrentLocation: Bool
     @StateObject private var locationManager = LocationManager()
     @FocusState private var isSearchFocused: Bool
+    @ObservedObject private var lang = LanguageManager.shared
 
     var body: some View {
         NavigationStack {
@@ -28,7 +29,7 @@ struct ToDirectionsView: View {
                                 completionRow(completion)
                             }
                         } header: {
-                            Text("SUGGESTIONS")
+                            Text(lang.t(nb: "FORSLAG", en: "SUGGESTIONS"))
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
@@ -40,7 +41,7 @@ struct ToDirectionsView: View {
                                 recentRow(item)
                             }
                         } header: {
-                            Text("RECENT")
+                            Text(lang.t(nb: "NYLIGE", en: "RECENT"))
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
@@ -50,7 +51,7 @@ struct ToDirectionsView: View {
                 .scrollDismissesKeyboard(.interactively)
             }
             .background(Color(colorScheme == .dark ? .black : .systemGroupedBackground))
-            .navigationTitle("Destination")
+            .navigationTitle(lang.t(nb: "Destinasjon", en: "Destination"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -81,7 +82,7 @@ struct ToDirectionsView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
             
-            TextField("Search destination...", text: $searchText)
+            TextField(lang.t(nb: "Søk etter destinasjon...", en: "Search destination..."), text: $searchText)
                 .focused($isSearchFocused)
                 .onSubmit {
                     if let first = viewModel.completions.first {

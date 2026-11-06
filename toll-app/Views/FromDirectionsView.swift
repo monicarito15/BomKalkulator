@@ -17,6 +17,7 @@ struct FromDirectionsView: View {
     
     @StateObject private var locationManager = LocationManager()
     @FocusState private var isSearchFocused: Bool
+    @ObservedObject private var lang = LanguageManager.shared
     
     var body: some View {
         NavigationStack {
@@ -34,7 +35,7 @@ struct FromDirectionsView: View {
                                 completionRow(completion)
                             }
                         } header: {
-                            Text("SUGGESTIONS")
+                            Text(lang.t(nb: "FORSLAG", en: "SUGGESTIONS"))
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
@@ -46,7 +47,7 @@ struct FromDirectionsView: View {
                                 recentRow(item)
                             }
                         } header: {
-                            Text("RECENT")
+                            Text(lang.t(nb: "NYLIGE", en: "RECENT"))
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
@@ -56,7 +57,7 @@ struct FromDirectionsView: View {
                 .scrollDismissesKeyboard(.interactively)
             }
             .background(Color(colorScheme == .dark ? .black : .systemGroupedBackground))
-            .navigationTitle("Starting Point")
+            .navigationTitle(lang.t(nb: "Startpunkt", en: "Starting Point"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -87,7 +88,7 @@ struct FromDirectionsView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.secondary)
             
-            TextField("Search starting point...", text: $searchText)
+            TextField(lang.t(nb: "Søk etter startpunkt...", en: "Search starting point..."), text: $searchText)
                 .focused($isSearchFocused)
                 .onSubmit {
                     if let first = viewModel.completions.first {
@@ -122,7 +123,7 @@ struct FromDirectionsView: View {
                 .font(.title3)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("Your Location")
+                Text(lang.t(nb: "Din posisjon", en: "Your Location"))
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(.blue)
                 

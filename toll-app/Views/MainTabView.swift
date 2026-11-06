@@ -7,7 +7,7 @@ struct MainTabView: View {
     @State private var selectedTab = 0
     @State private var didAppearOnce = false // para saber si ya se abrio el sheet alguna vez
 
-    @State private var currentDetent: PresentationDetent = .height(460) // padre del estado del tamano global
+    @State private var currentDetent: PresentationDetent = .height(520) // padre del estado del tamano global
 
     @State private var selectedHistoryItem: SearchHistoryItem? = nil // para rehacer una búsqueda
 
@@ -52,7 +52,7 @@ struct MainTabView: View {
                 .tag(2)
             HistoryView(onSelectSearch: { historyItem in
                 selectedHistoryItem = historyItem
-                selectedTab = 1
+                selectedTab = 2
             })
             .environmentObject(purchaseManager)
                 .tabItem {

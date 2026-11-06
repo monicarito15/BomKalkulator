@@ -34,8 +34,8 @@ struct CalculatorView: View {
     @Binding var selectedDateTime: Date
     
     @StateObject private var locationManager = LocationManager()
-    
-    
+    @ObservedObject private var lang = LanguageManager.shared
+
     let fuelTypes: [FuelType] = [.gas, .electric, .diesel]
     let vehicleTypes: [VehicleType] = [.car, .motorcycle]
 
@@ -70,7 +70,7 @@ struct CalculatorView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Calculate Toll")
+                    Text(lang.t(nb: "Beregn bompenger", en: "Calculate Toll"))
                         .font(.headline)
                         .fontWeight(.semibold)
                 }
@@ -121,7 +121,7 @@ struct CalculatorView: View {
     // Route & Time Section
     private var routeAndTimeSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("ROUTE & TIME")
+            Text(lang.t(nb: "RUTE OG TID", en: "ROUTE & TIME"))
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundStyle(.secondary)
@@ -209,11 +209,11 @@ struct CalculatorView: View {
                         Image(systemName: "location.fill")
                             .font(.system(size: 14))
                             .foregroundStyle(.blue)
-                        Text("Your location")
+                        Text(lang.t(nb: "Din posisjon", en: "Your location"))
                             .foregroundStyle(.blue)
                             .lineLimit(1)
                     } else {
-                        Text(from.isEmpty ? "From" : from)
+                        Text(from.isEmpty ? lang.t(nb: "Fra", en: "From") : from)
                             .foregroundStyle(from.isEmpty ? .tertiary : .primary)
                             .lineLimit(1)
                     }
@@ -251,11 +251,11 @@ struct CalculatorView: View {
                         Image(systemName: "location.fill")
                             .font(.system(size: 14))
                             .foregroundStyle(.blue)
-                        Text("Your location")
+                        Text(lang.t(nb: "Din posisjon", en: "Your location"))
                             .foregroundStyle(.blue)
                             .lineLimit(1)
                     } else {
-                        Text(to.isEmpty ? "To" : to)
+                        Text(to.isEmpty ? lang.t(nb: "Til", en: "To") : to)
                             .foregroundStyle(to.isEmpty ? .tertiary : .primary)
                             .lineLimit(1)
                     }
@@ -280,7 +280,7 @@ struct CalculatorView: View {
                 .frame(width: 24)
             
             DatePicker(
-                "Date and Time",
+                lang.t(nb: "Dato og tid", en: "Date and Time"),
                 selection: $selectedDateTime,
                 displayedComponents: [.date, .hourAndMinute]
             )
@@ -307,8 +307,8 @@ struct CalculatorView: View {
 
                 segmentedPicker(
                     options: [
-                        (icon: "car.fill", label: "Car", isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car }),
-                        (icon: "motorcycle.fill", label: "Motorcycle", isSelected: selectedVehicleType == .motorcycle, action: { selectedVehicleType = .motorcycle })
+                        (icon: "car.fill", label: lang.t(nb: "Bil", en: "Car"), isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car }),
+                        (icon: "motorcycle.fill", label: lang.t(nb: "Motorsykkel", en: "Motorcycle"), isSelected: selectedVehicleType == .motorcycle, action: { selectedVehicleType = .motorcycle })
                     ]
                 )
             }
@@ -323,9 +323,9 @@ struct CalculatorView: View {
 
                 segmentedPicker(
                     options: [
-                        (icon: "fuelpump.fill", label: "Gas", isSelected: selectedFuelType == .gas, action: { selectedFuelType = .gas }),
-                        (icon: "bolt.fill", label: "Electric", isSelected: selectedFuelType == .electric, action: { selectedFuelType = .electric }),
-                        (icon: "fuelpump.fill", label: "Diesel", isSelected: selectedFuelType == .diesel, action: { selectedFuelType = .diesel })
+                        (icon: "fuelpump.fill", label: lang.t(nb: "Bensin", en: "Gas"), isSelected: selectedFuelType == .gas, action: { selectedFuelType = .gas }),
+                        (icon: "bolt.fill", label: lang.t(nb: "Elektrisk", en: "Electric"), isSelected: selectedFuelType == .electric, action: { selectedFuelType = .electric }),
+                        (icon: "fuelpump.fill", label: lang.t(nb: "Diesel", en: "Diesel"), isSelected: selectedFuelType == .diesel, action: { selectedFuelType = .diesel })
                     ]
                 )
             }
@@ -363,7 +363,7 @@ struct CalculatorView: View {
     // Vehicle Details Section
     private var autopassSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("VEHICLE DETAILS")
+            Text(lang.t(nb: "KJØRETØY", en: "VEHICLE DETAILS"))
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundStyle(.secondary)
@@ -418,7 +418,7 @@ struct CalculatorView: View {
                 Image(systemName: "checkmark.shield.fill")
                     .font(.caption)
                     .foregroundStyle(.blue)
-                Text("All prices are AutoPASS rates")
+                Text(lang.t(nb: "Alle priser er AutoPASS-priser", en: "All prices are AutoPASS rates"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -468,7 +468,7 @@ struct CalculatorView: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "arrow.triangle.turn.up.right.diamond.fill")
-                Text("Calculate Route")
+                Text(lang.t(nb: "Beregn rute", en: "Calculate Route"))
                     .fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)
@@ -486,7 +486,7 @@ struct CalculatorView: View {
 // Nearby Tolls Section
     private var nearbyTollsSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("NEARBY TOLLS")
+            Text(lang.t(nb: "BOMSTASJONER I NÆRHETEN", en: "NEARBY TOLLS"))
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundStyle(.secondary)
