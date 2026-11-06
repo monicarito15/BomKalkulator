@@ -215,21 +215,32 @@ struct PeriodPDFGenerator {
         dateFmt.locale = Locale(identifier: "nb_NO")
         dateFmt.dateFormat = "dd.MM"
 
-        for trip in trips {
+        for (index, trip) in trips.enumerated() {
             let rowY = y + (rowH - 14) / 2
             let dateStr = dateFmt.string(from: trip.startTime)
+            let fraStr  = trip.startCity.isEmpty ? "—" : trip.startCity
+            let tilStr  = trip.endCity.isEmpty ? "—" : trip.endCity
             let kmStr   = trip.distanceKm > 0 ? String(format: "%.1f", trip.distanceKm).replacingOccurrences(of: ".", with: ",") : "—"
             let tollStr = String(format: "%.2f kr", trip.totalTollCost).replacingOccurrences(of: ".", with: ",")
 
             dateStr.draw(at: CGPoint(x: xDato, y: rowY), withAttributes: rowAttrs)
-            "—".draw(at: CGPoint(x: xFra, y: rowY), withAttributes: rowAttrs)   // Fra (pending GPS)
-            "—".draw(at: CGPoint(x: xTil, y: rowY), withAttributes: rowAttrs)   // Til (pending GPS)
+            fraStr.draw(at: CGPoint(x: xFra, y: rowY), withAttributes: rowAttrs)
+            tilStr.draw(at: CGPoint(x: xTil, y: rowY), withAttributes: rowAttrs)
             kmStr.draw(at: CGPoint(x: xKm, y: rowY), withAttributes: rowAttrs)
 
             let tollW = (tollStr as NSString).size(withAttributes: rowAttrs).width
             tollStr.draw(at: CGPoint(x: pageWidth - margin - tollW, y: rowY), withAttributes: rowAttrs)
 
             y += rowH
+
+            if index < trips.count - 1 {
+                let div = UIBezierPath()
+                div.move(to: CGPoint(x: margin, y: y))
+                div.addLine(to: CGPoint(x: pageWidth - margin, y: y))
+                UIColor.separator.withAlphaComponent(0.3).setStroke()
+                div.lineWidth = 0.3
+                div.stroke()
+            }
         }
 
         y += 12

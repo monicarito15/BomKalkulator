@@ -10,6 +10,13 @@ struct TripDetailView: View {
         colorScheme == .dark ? Color(.systemGray6) : Color(.white)
     }
 
+    private var tripDateLabel: String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "nb_NO")
+        f.dateFormat = "d. MMMM yyyy"
+        return f.string(from: trip.startTime)
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -45,7 +52,12 @@ struct TripDetailView: View {
             .background(Color(colorScheme == .dark ? .black : .systemGroupedBackground))
         }
         .sheet(isPresented: $showPDF) {
-            PDFReportView(trip: trip)
+            PeriodReportView(
+                trips: [trip],
+                periodLabel: tripDateLabel,
+                driverName: trip.driverName,
+                company: trip.company
+            )
         }
     }
 

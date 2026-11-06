@@ -25,6 +25,8 @@ final class WorkTrip {
     var totalTollCost: Double
     var passagesJSON: Data
     var statusRaw: String
+    var startCity: String = ""
+    var endCity: String = ""
 
     init(driverName: String, company: String) {
         self.id = UUID()

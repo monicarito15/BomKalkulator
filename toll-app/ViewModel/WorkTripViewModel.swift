@@ -30,9 +30,14 @@ final class WorkTripViewModel: ObservableObject {
     private var lastGeocodedAt: Date = .distantPast
     private var locationTask: Task<Void, Never>?
     private var speedAboveThresholdSeconds: Int = 0
+    private var capturedStartCity: String = ""
+    private var capturedEndCity: String = ""
+    private var stationaryStartTime: Date? = nil
 
     private static let autoResumeSpeedThreshold: Double = 2.78  // 10 km/h in m/s
     private static let autoResumeRequiredSeconds: Int = 10
+    private static let autoPauseSpeedThreshold: Double = 1.39   // 5 km/h in m/s
+    private static let autoPauseRequiredSeconds: Double = 600   // 10 minutes
 
     var formattedElapsed: String {
         let h = elapsedSeconds / 3600
@@ -64,6 +69,9 @@ final class WorkTripViewModel: ObservableObject {
         totalTollCost = 0
         lastLocation = nil
         speedAboveThresholdSeconds = 0
+        capturedStartCity = ""
+        capturedEndCity = ""
+        stationaryStartTime = nil
         startTimer()
         startLocationTracking(monitoringForResume: false)
     }
@@ -79,6 +87,8 @@ final class WorkTripViewModel: ObservableObject {
         trip.endTime = Date()
         trip.distanceKm = distanceKm
         trip.totalTollCost = totalTollCost
+        trip.startCity = capturedStartCity
+        trip.endCity = capturedEndCity.isEmpty ? capturedStartCity : capturedEndCity
         trip.status = .completed
         context.insert(trip)
         try? context.save()
@@ -101,6 +111,7 @@ final class WorkTripViewModel: ObservableObject {
         }
         pauseStartTime = nil
         speedAboveThresholdSeconds = 0
+        stationaryStartTime = nil
         showResumeNotification = false
         resumeCountdown = 0
         tripState = .active
@@ -195,7 +206,26 @@ final class WorkTripViewModel: ObservableObject {
                         }
                         self.lastLocation = location
 
-                        if Date().timeIntervalSince(self.lastGeocodedAt) > 30 {
+                        // Auto-pause after 10 min stationary
+                        let speed = location.speed
+                        if speed >= 0 && speed < Self.autoPauseSpeedThreshold {
+                            if self.stationaryStartTime == nil {
+                                self.stationaryStartTime = Date()
+                            } else if let since = self.stationaryStartTime,
+                                      Date().timeIntervalSince(since) >= Self.autoPauseRequiredSeconds {
+                                self.stationaryStartTime = nil
+                                self.pauseTrip()
+                                return
+                            }
+                        } else {
+                            self.stationaryStartTime = nil
+                        }
+
+                        if self.capturedStartCity.isEmpty {
+                            self.lastGeocodedAt = Date()
+                            await self.reverseGeocode(location)
+                            self.capturedStartCity = self.capturedEndCity
+                        } else if Date().timeIntervalSince(self.lastGeocodedAt) > 30 {
                             self.lastGeocodedAt = Date()
                             await self.reverseGeocode(location)
                         }
@@ -221,6 +251,7 @@ final class WorkTripViewModel: ObservableObject {
             if let placemark = placemarks.first {
                 let parts = [placemark.thoroughfare, placemark.locality].compactMap { $0 }
                 self.currentAddress = parts.joined(separator: ", ")
+                self.capturedEndCity = placemark.locality ?? placemark.administrativeArea ?? ""
             }
         } catch {
             #if DEBUG
@@ -239,6 +270,9 @@ final class WorkTripViewModel: ObservableObject {
         tripStartTime = nil
         totalPausedTime = 0
         currentAddress = ""
+        capturedStartCity = ""
+        capturedEndCity = ""
+        stationaryStartTime = nil
         speedAboveThresholdSeconds = 0
         showResumeNotification = false
         resumeCountdown = 0
