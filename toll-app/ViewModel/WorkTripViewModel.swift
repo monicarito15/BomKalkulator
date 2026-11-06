@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import CoreLocation
+import UserNotifications
 
 enum WorkTripState: Equatable {
     case idle
@@ -145,6 +146,10 @@ final class WorkTripViewModel: ObservableObject {
                     resumeCountdown -= 1
                 }
                 if !Task.isCancelled {
+                    sendNotification(
+                        title: LanguageManager.shared.t(nb: "Kjøretur gjenopptatt", en: "Trip resumed"),
+                        body: LanguageManager.shared.t(nb: "Bevegelse oppdaget — turen fortsetter.", en: "Movement detected — trip is continuing.")
+                    )
                     resumeTrip()
                 }
             } catch {
@@ -214,6 +219,10 @@ final class WorkTripViewModel: ObservableObject {
                             } else if let since = self.stationaryStartTime,
                                       Date().timeIntervalSince(since) >= Self.autoPauseRequiredSeconds {
                                 self.stationaryStartTime = nil
+                                self.sendNotification(
+                                    title: LanguageManager.shared.t(nb: "Kjøretur pauset", en: "Trip paused"),
+                                    body: LanguageManager.shared.t(nb: "Ingen bevegelse på 10 min. Åpne appen for å gjenoppta.", en: "No movement for 10 min. Open the app to resume.")
+                                )
                                 self.pauseTrip()
                                 return
                             }
@@ -242,6 +251,19 @@ final class WorkTripViewModel: ObservableObject {
     private func stopLocationTracking() {
         locationTask?.cancel()
         locationTask = nil
+    }
+
+    func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    }
+
+    private func sendNotification(title: String, body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request)
     }
 
     private func reverseGeocode(_ location: CLLocation) async {

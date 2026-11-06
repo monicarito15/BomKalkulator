@@ -87,6 +87,7 @@ struct WorkTripView: View {
 
             VStack(spacing: 12) {
                 Button {
+                    vm.requestNotificationPermission()
                     vm.startTrip()
                 } label: {
                     ZStack {
