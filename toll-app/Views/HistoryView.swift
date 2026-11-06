@@ -7,6 +7,7 @@ struct HistoryView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject var purchaseManager: PurchaseManager
+    @ObservedObject private var lang = LanguageManager.shared
 
     @State private var showPaywall = false
     @State private var historyTab: Int = 0
@@ -69,13 +70,13 @@ struct HistoryView: View {
         let daysDifference = calendar.dateComponents([.day], from: calendar.startOfDay(for: date), to: calendar.startOfDay(for: now)).day ?? 0
 
         if daysDifference == 0 {
-            return "Today"
+            return lang.t(nb: "I dag", en: "Today")
         } else if daysDifference == 1 {
-            return "Yesterday"
+            return lang.t(nb: "I går", en: "Yesterday")
         } else if daysDifference <= 7 {
-            return "Last Week"
+            return lang.t(nb: "Siste uke", en: "Last Week")
         } else if daysDifference <= 30 {
-            return "Last Month"
+            return lang.t(nb: "Siste måned", en: "Last Month")
         } else {
             let formatter = DateFormatter()
             formatter.dateFormat = "MMMM yyyy"
@@ -87,8 +88,8 @@ struct HistoryView: View {
         NavigationView {
             VStack(spacing: 0) {
                 Picker("", selection: $historyTab) {
-                    Text("Searches").tag(0)
-                    Text("Trips").tag(1)
+                    Text(lang.t(nb: "Søk", en: "Searches")).tag(0)
+                    Text(lang.t(nb: "Turer", en: "Trips")).tag(1)
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal, 16)
@@ -111,16 +112,16 @@ struct HistoryView: View {
                 Color(colorScheme == .dark ? .black : .systemGroupedBackground)
                     .ignoresSafeArea()
             )
-            .navigationTitle("History")
+            .navigationTitle(lang.t(nb: "Historikk", en: "History"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if historyTab == 0 && !searchHistory.isEmpty {
-                        Text("\(searchHistory.count) search\(searchHistory.count == 1 ? "" : "es")")
+                        Text("\(searchHistory.count) \(lang.t(nb: "søk", en: searchHistory.count == 1 ? "search" : "searches"))")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     } else if historyTab == 1 && !completedTrips.isEmpty {
-                        Text("\(completedTrips.count) trip\(completedTrips.count == 1 ? "" : "s")")
+                        Text("\(completedTrips.count) \(lang.t(nb: completedTrips.count == 1 ? "tur" : "turer", en: completedTrips.count == 1 ? "trip" : "trips"))")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -141,10 +142,10 @@ struct HistoryView: View {
                     Image(systemName: "clock.arrow.circlepath")
                         .font(.system(size: 60))
                         .foregroundStyle(.gray)
-                    Text("No History")
+                    Text(lang.t(nb: "Ingen historikk", en: "No History"))
                         .font(.title2)
                         .fontWeight(.semibold)
-                    Text("Your recent searches will appear here")
+                    Text(lang.t(nb: "Dine siste søk vises her", en: "Your recent searches will appear here"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -198,9 +199,9 @@ struct HistoryView: View {
                                     .foregroundStyle(.orange)
                                     .frame(width: 32)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("\(hiddenCount) more search\(hiddenCount == 1 ? "" : "es") locked")
+                                    Text("\(hiddenCount) \(lang.t(nb: "søk låst", en: hiddenCount == 1 ? "more search locked" : "more searches locked"))")
                                         .font(.subheadline.weight(.medium))
-                                    Text("Unlock full history for 19 kr")
+                                    Text(lang.t(nb: "Lås opp full historikk for 19 kr", en: "Unlock full history for 19 kr"))
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
@@ -232,10 +233,10 @@ struct HistoryView: View {
                     Image(systemName: "steeringwheel")
                         .font(.system(size: 60))
                         .foregroundStyle(.gray)
-                    Text("No Trips Yet")
+                    Text(lang.t(nb: "Ingen turer ennå", en: "No Trips Yet"))
                         .font(.title2)
                         .fontWeight(.semibold)
-                    Text("Completed work trips will appear here")
+                    Text(lang.t(nb: "Fullførte kjøreturer vises her", en: "Completed work trips will appear here"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -315,7 +316,7 @@ struct HistoryView: View {
                         Text("•")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text("\(historyItem.tollCount) toll\(historyItem.tollCount == 1 ? "" : "s")")
+                        Text("\(historyItem.tollCount) \(lang.t(nb: historyItem.tollCount == 1 ? "bom" : "bommer", en: historyItem.tollCount == 1 ? "toll" : "tolls"))")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

@@ -14,6 +14,7 @@ struct TravelView: View {
 
     @Environment(\.modelContext) private var modelContext
     @StateObject private var vm = MapViewModel()
+    @ObservedObject private var lang = LanguageManager.shared
     @EnvironmentObject var purchaseManager: PurchaseManager
     @Environment(\.requestReview) private var requestReview
     @State private var showPaywall = false
@@ -152,9 +153,9 @@ struct TravelView: View {
                     .foregroundStyle(.blue)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Calculate toll costs")
+                    Text(lang.t(nb: "Beregn bomkostnader", en: "Calculate toll costs"))
                         .font(.headline)
-                    Text("Find price, time and toll stations for your route.")
+                    Text(lang.t(nb: "Finn pris, tid og bomstasjoner for din rute.", en: "Find price, time and toll stations for your route."))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -165,7 +166,7 @@ struct TravelView: View {
             Button {
                 showSheet = true
             } label: {
-                Text("Calculate route")
+                Text(lang.t(nb: "Beregn rute", en: "Calculate route"))
                     .font(.headline)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)

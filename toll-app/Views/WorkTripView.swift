@@ -3,6 +3,7 @@ import SwiftData
 
 struct WorkTripView: View {
     @StateObject private var vm = WorkTripViewModel()
+    @ObservedObject private var lang = LanguageManager.shared
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
 
@@ -38,16 +39,16 @@ struct WorkTripView: View {
                         .padding(.bottom, 12)
                 }
             }
-            .navigationTitle("Work Trip")
+            .navigationTitle(lang.t(nb: "Kjøretur", en: "Work Trip"))
             .navigationBarTitleDisplayMode(.large)
             .animation(.spring(response: 0.4, dampingFraction: 0.8), value: vm.showResumeNotification)
-            .alert("Stop this trip?", isPresented: $showEndTripAlert) {
-                Button("Yes, stop and save", role: .destructive) {
+            .alert(lang.t(nb: "Avslutt kjøreturen?", en: "Stop this trip?"), isPresented: $showEndTripAlert) {
+                Button(lang.t(nb: "Ja, avslutt og lagre", en: "Yes, stop and save"), role: .destructive) {
                     vm.endTrip(context: modelContext, driverName: driverName, company: companyName)
                 }
-                Button("Keep going", role: .cancel) {}
+                Button(lang.t(nb: "Fortsett", en: "Keep going"), role: .cancel) {}
             } message: {
-                Text("Your trip will be saved and you won't be able to continue it.")
+                Text(lang.t(nb: "Turen lagres og kan ikke fortsettes.", en: "Your trip will be saved and you won't be able to continue it."))
             }
         }
     }
@@ -99,10 +100,10 @@ struct WorkTripView: View {
                     }
                 }
 
-                Text("Start work trip")
+                Text(lang.t(nb: "Start kjøretur", en: "Start work trip"))
                     .font(.title3.weight(.semibold))
 
-                Text("We'll track distance, time and toll passages.")
+                Text(lang.t(nb: "Vi sporer distanse, tid og bompasseringer.", en: "We'll track distance, time and toll passages."))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -120,12 +121,12 @@ struct WorkTripView: View {
 
                 HStack(spacing: 12) {
                     statCard(
-                        label: "DISTANCE",
+                        label: lang.t(nb: "DISTANSE", en: "DISTANCE"),
                         value: String(format: "%.2f", vm.distanceKm),
                         unit: "km"
                     )
                     statCard(
-                        label: "TIME",
+                        label: lang.t(nb: "TID", en: "TIME"),
                         value: vm.formattedElapsed,
                         unit: nil
                     )
@@ -155,7 +156,7 @@ struct WorkTripView: View {
                         }
                     }
 
-                    Text("Work trip in progress")
+                    Text(lang.t(nb: "Kjøretur pågår", en: "Work trip in progress"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
 
@@ -163,7 +164,7 @@ struct WorkTripView: View {
                         Button {
                             vm.pauseTrip()
                         } label: {
-                            Label("Set on pause", systemImage: "pause.fill")
+                            Label(lang.t(nb: "Sett på pause", en: "Set on pause"), systemImage: "pause.fill")
                                 .font(.subheadline.weight(.medium))
                                 .foregroundStyle(.primary)
                                 .padding(.horizontal, 20)
@@ -217,7 +218,7 @@ struct WorkTripView: View {
                         }
                     }
 
-                    Text("Work trip in progress")
+                    Text(lang.t(nb: "Kjøretur pågår", en: "Work trip in progress"))
                         .font(.subheadline)
                         .foregroundStyle(.tertiary)
                 }
@@ -241,9 +242,9 @@ struct WorkTripView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Trip auto-paused")
+                    Text(lang.t(nb: "Tur satt på pause", en: "Trip auto-paused"))
                         .font(.subheadline.weight(.semibold))
-                    Text("You are stopped")
+                    Text(lang.t(nb: "Du har stoppet", en: "You are stopped"))
                         .font(.caption)
                         .foregroundStyle(.orange)
                 }
@@ -254,7 +255,7 @@ struct WorkTripView: View {
                 Button {
                     vm.resumeTrip()
                 } label: {
-                    Text("Continue")
+                    Text(lang.t(nb: "Fortsett", en: "Continue"))
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -266,7 +267,7 @@ struct WorkTripView: View {
                 Button {
                     showEndTripAlert = true
                 } label: {
-                    Text("End trip")
+                    Text(lang.t(nb: "Avslutt tur", en: "End trip"))
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.red)
                         .frame(maxWidth: .infinity)
@@ -286,11 +287,11 @@ struct WorkTripView: View {
     private var tollCard: some View {
         HStack(alignment: .bottom) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("TOLL STATIONS")
+                Text(lang.t(nb: "BOMSTASJONER", en: "TOLL STATIONS"))
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(.secondary)
-                Text("\(vm.tollCount) passage\(vm.tollCount == 1 ? "" : "s")")
+                Text("\(vm.tollCount) \(lang.t(nb: vm.tollCount == 1 ? "passering" : "passeringer", en: vm.tollCount == 1 ? "passage" : "passages"))")
                     .font(.title3.weight(.bold))
             }
             Spacer()
@@ -310,7 +311,7 @@ struct WorkTripView: View {
                 .foregroundStyle(.blue)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("CURRENT POSITION")
+                Text(lang.t(nb: "NÅVÆRENDE POSISJON", en: "CURRENT POSITION"))
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(.secondary)
@@ -330,9 +331,9 @@ struct WorkTripView: View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Looks like you're moving")
+                    Text(lang.t(nb: "Det ser ut som du beveger deg", en: "Looks like you're moving"))
                         .font(.subheadline.weight(.semibold))
-                    Text("Your trip resumes in \(vm.resumeCountdown)s...")
+                    Text(String(format: lang.t(nb: "Turen gjenopptas om %ds...", en: "Your trip resumes in %ds..."), vm.resumeCountdown))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -350,7 +351,7 @@ struct WorkTripView: View {
                     vm.cancelAutoResume()
                 }
             } label: {
-                Text("Not ready yet? Keep it paused.")
+                Text(lang.t(nb: "Ikke klar? Hold turen på pause.", en: "Not ready yet? Keep it paused."))
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity)

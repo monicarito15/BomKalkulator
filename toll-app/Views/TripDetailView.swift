@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TripDetailView: View {
     let trip: WorkTrip
+    @ObservedObject private var lang = LanguageManager.shared
     @Environment(\.colorScheme) private var colorScheme
     @State private var showPDF = false
 
@@ -22,7 +23,7 @@ struct TripDetailView: View {
             .padding(.vertical, 20)
         }
         .background(Color(colorScheme == .dark ? .black : .systemGroupedBackground).ignoresSafeArea())
-        .navigationTitle("Trip")
+        .navigationTitle(lang.t(nb: "Kjøretur", en: "Trip"))
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
             Button {
@@ -30,7 +31,7 @@ struct TripDetailView: View {
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "doc.fill")
-                    Text("Last ned PDF")
+                    Text(lang.t(nb: "Last ned PDF", en: "Download PDF"))
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
@@ -68,7 +69,7 @@ struct TripDetailView: View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("DISTANSE")
+                    Text(lang.t(nb: "DISTANSE", en: "DISTANCE"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(trip.distanceKm > 0 ? String(format: "%.1f km", trip.distanceKm) : "—")
@@ -81,7 +82,7 @@ struct TripDetailView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("VARIGHET")
+                    Text(lang.t(nb: "VARIGHET", en: "DURATION"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(trip.formattedDuration)
@@ -95,7 +96,7 @@ struct TripDetailView: View {
             }
 
             HStack {
-                Text("BOMPENGER")
+                Text(lang.t(nb: "BOMPENGER", en: "TOLL COST"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -111,7 +112,7 @@ struct TripDetailView: View {
 
     private var tollStations: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("BOMSTASJONER")
+            Text(lang.t(nb: "BOMSTASJONER", en: "TOLL STATIONS"))
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundStyle(.secondary)
@@ -129,7 +130,7 @@ struct TripDetailView: View {
                             Text(passage.stationName)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                            Text("AutoPass registrert")
+                            Text(lang.t(nb: "AutoPass registrert", en: "AutoPass registered"))
                                 .font(.caption2)
                                 .foregroundStyle(.tertiary)
                         }
