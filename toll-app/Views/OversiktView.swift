@@ -1,7 +1,6 @@
 import SwiftUI
 import SwiftData
 import Charts
-import MapKit
 
 struct OversiktView: View {
     var onShowHistory: (() -> Void)? = nil
@@ -103,21 +102,22 @@ struct OversiktView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                headerSection
-                periodSelector
-                oversiktCard
-                passeringskartSection
-                if !recentPassages.isEmpty {
-                    sistePasseringerSection
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    headerSection
+                    periodSelector
+                    oversiktCard
+                    if !recentPassages.isEmpty {
+                        sistePasseringerSection
+                    }
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 20)
+                .padding(.bottom, 32)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 20)
-            .padding(.bottom, 32)
+            .background(Color(colorScheme == .dark ? .black : .systemGroupedBackground).ignoresSafeArea())
         }
-        .background(Color(colorScheme == .dark ? .black : .systemGroupedBackground).ignoresSafeArea())
     }
 
     private var headerSection: some View {
@@ -180,13 +180,17 @@ struct OversiktView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
 
-            HStack(spacing: 20) {
+            HStack(spacing: 0) {
+                Spacer()
                 donutChart
+                    .padding(.top, 8)
+                Spacer().frame(width: 32)
                 legendView
                 Spacer()
             }
 
             totalCard
+                .padding(.top, 8)
 
             Divider()
 
@@ -294,53 +298,18 @@ struct OversiktView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
-    private var passeringskartSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(lang.t(nb: "Passeringskart", en: "Passage map"))
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                Spacer()
-                Button { } label: {
-                    Text(lang.t(nb: "Se alle", en: "See all"))
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.blue)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.blue, lineWidth: 1))
-                }
-            }
-
-            Map(initialPosition: .region(MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: 64.5, longitude: 17.0),
-                span: MKCoordinateSpan(latitudeDelta: 12, longitudeDelta: 10)
-            )), interactionModes: [])
-            .frame(height: 180)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-        }
-        .padding(16)
-        .background(cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-    }
-
     private var sistePasseringerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(lang.t(nb: "Siste passeringer", en: "Recent passages"))
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                Spacer()
-                Button { onShowHistory?() } label: {
-                    Text(lang.t(nb: "Se historikk", en: "See history"))
-                        .font(.subheadline)
-                        .foregroundStyle(.blue)
-                }
-            }
+            Text(lang.t(nb: "Siste passeringer", en: "Recent passages"))
+                .font(.title3)
+                .fontWeight(.semibold)
 
             VStack(spacing: 0) {
                 ForEach(Array(recentPassages.enumerated()), id: \.offset) { index, item in
-                    passageRow(item.passage)
+                    NavigationLink(destination: TripDetailView(trip: item.trip)) {
+                        passageRow(item.passage)
+                    }
+                    .buttonStyle(.plain)
                     if index < recentPassages.count - 1 {
                         Divider().padding(.leading, 60)
                     }

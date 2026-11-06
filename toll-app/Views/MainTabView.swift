@@ -34,13 +34,10 @@ struct MainTabView: View {
                 }
             
                 .tag(0)
-            HistoryView(onSelectSearch: { historyItem in
-                selectedHistoryItem = historyItem
-                selectedTab = 1
-            })
-            .environmentObject(purchaseManager)
+            
+            WorkTripView()
                 .tabItem {
-                    Label(lang.t(nb: "Historikk", en: "History"), systemImage: "car.fill")
+                    Label(lang.t(nb: "Kjøretur", en: "Work Trip"), systemImage: "steeringwheel")
                 }
             
                 .tag(1)
@@ -53,9 +50,13 @@ struct MainTabView: View {
                 }
             
                 .tag(2)
-            WorkTripView()
+            HistoryView(onSelectSearch: { historyItem in
+                selectedHistoryItem = historyItem
+                selectedTab = 1
+            })
+            .environmentObject(purchaseManager)
                 .tabItem {
-                    Label(lang.t(nb: "Kjøretur", en: "Work Trip"), systemImage: "steeringwheel")
+                    Label(lang.t(nb: "Historikk", en: "History"), systemImage: "car.fill")
                 }
             
                 .tag(3)
