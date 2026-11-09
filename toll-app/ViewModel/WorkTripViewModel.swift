@@ -37,6 +37,7 @@ final class WorkTripViewModel: ObservableObject {
     private var stationaryStartTime: Date? = nil
     private var loadedTolls: [Vegobjekt] = []
     private var recentlyPassed: [Int: Date] = [:]
+    private var backgroundSession: CLBackgroundActivitySession?
 
     private static let autoResumeSpeedThreshold: Double = 2.78  // 10 km/h in m/s
     private static let tollPassageRadius: Double = 50.0           // meters (matches route detection)
@@ -78,6 +79,7 @@ final class WorkTripViewModel: ObservableObject {
         capturedStartCity = ""
         capturedEndCity = ""
         stationaryStartTime = nil
+        backgroundSession = CLBackgroundActivitySession()
         startTimer()
         startLocationTracking(monitoringForResume: false)
         Task { await self.loadTolls() }
@@ -351,5 +353,7 @@ final class WorkTripViewModel: ObservableObject {
         passages = []
         loadedTolls = []
         recentlyPassed = [:]
+        backgroundSession?.invalidate()
+        backgroundSession = nil
     }
 }
