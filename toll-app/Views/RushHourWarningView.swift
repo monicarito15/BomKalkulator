@@ -9,20 +9,21 @@ import SwiftUI
 
 struct RushHourWarningView: View {
     let date: Date
-    
+    @ObservedObject private var lang = LanguageManager.shared
+
     var body: some View {
         HStack(spacing: 12) {
             // Clock icon
             Image(systemName: "clock.fill")
                 .font(.title3)
                 .foregroundStyle(.red)
-            
+
             // Warning text
             VStack(alignment: .leading, spacing: 4) {
-                Text("Rush Hour")
+                Text(lang.t(nb: "Rushtid", en: "Rush Hour"))
                     .font(.headline)
                     .foregroundStyle(.red)
-                
+
                 Text(date.rushHourMessage())
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
