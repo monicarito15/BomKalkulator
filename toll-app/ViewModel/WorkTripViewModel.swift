@@ -177,6 +177,17 @@ final class WorkTripViewModel: ObservableObject {
                 guard let start = self.tripStartTime else { return }
                 let raw = Date().timeIntervalSince(start)
                 self.elapsedSeconds = max(0, Int(raw - self.totalPausedTime))
+
+                if self.tripState == .active,
+                   let since = self.stationaryStartTime,
+                   Date().timeIntervalSince(since) >= Self.autoPauseRequiredSeconds {
+                    self.stationaryStartTime = nil
+                    self.sendNotification(
+                        title: LanguageManager.shared.t(nb: "Kjøretur pauset", en: "Trip paused"),
+                        body: LanguageManager.shared.t(nb: "Ingen bevegelse på 10 min. Åpne appen for å gjenoppta.", en: "No movement for 10 min. Open the app to resume.")
+                    )
+                    self.pauseTrip()
+                }
             }
         }
     }
@@ -219,23 +230,14 @@ final class WorkTripViewModel: ObservableObject {
                         self.lastLocation = location
                         self.checkTollPassage(at: location)
 
-                        // Auto-pause after 10 min stationary
+                        // Track stationary time — trigger handled by the 1s timer
+                        // speed < 0 means GPS couldn't compute it (unknown) — don't reset
                         let speed = location.speed
-                        if speed >= 0 && speed < Self.autoPauseSpeedThreshold {
-                            if self.stationaryStartTime == nil {
-                                self.stationaryStartTime = Date()
-                            } else if let since = self.stationaryStartTime,
-                                      Date().timeIntervalSince(since) >= Self.autoPauseRequiredSeconds {
-                                self.stationaryStartTime = nil
-                                self.sendNotification(
-                                    title: LanguageManager.shared.t(nb: "Kjøretur pauset", en: "Trip paused"),
-                                    body: LanguageManager.shared.t(nb: "Ingen bevegelse på 10 min. Åpne appen for å gjenoppta.", en: "No movement for 10 min. Open the app to resume.")
-                                )
-                                self.pauseTrip()
-                                return
-                            }
-                        } else {
+                        let clearlyMoving = speed >= 0 && speed >= Self.autoPauseSpeedThreshold
+                        if clearlyMoving {
                             self.stationaryStartTime = nil
+                        } else if self.stationaryStartTime == nil {
+                            self.stationaryStartTime = Date()
                         }
 
                         if self.capturedStartCity.isEmpty {
