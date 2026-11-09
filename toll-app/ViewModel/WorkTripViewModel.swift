@@ -19,6 +19,7 @@ final class WorkTripViewModel: ObservableObject {
     @Published var showResumeNotification: Bool = false
     @Published var resumeCountdown: Int = 0
     @Published var currentAddress: String = ""
+    @Published var passages: [TollPassage] = []
 
     static let countdownDuration = 10
 
@@ -34,8 +35,12 @@ final class WorkTripViewModel: ObservableObject {
     private var capturedStartCity: String = ""
     private var capturedEndCity: String = ""
     private var stationaryStartTime: Date? = nil
+    private var loadedTolls: [Vegobjekt] = []
+    private var recentlyPassed: [Int: Date] = [:]
 
     private static let autoResumeSpeedThreshold: Double = 2.78  // 10 km/h in m/s
+    private static let tollPassageRadius: Double = 50.0           // meters (matches route detection)
+    private static let tollPassageCooldown: TimeInterval = 60.0  // seconds per station
     private static let autoResumeRequiredSeconds: Int = 10
     private static let autoPauseSpeedThreshold: Double = 1.39   // 5 km/h in m/s
     private static let autoPauseRequiredSeconds: Double = 600   // 10 minutes
@@ -75,6 +80,7 @@ final class WorkTripViewModel: ObservableObject {
         stationaryStartTime = nil
         startTimer()
         startLocationTracking(monitoringForResume: false)
+        Task { await self.loadTolls() }
     }
 
 
@@ -90,6 +96,7 @@ final class WorkTripViewModel: ObservableObject {
         trip.totalTollCost = totalTollCost
         trip.startCity = capturedStartCity
         trip.endCity = capturedEndCity.isEmpty ? capturedStartCity : capturedEndCity
+        trip.passages = passages
         trip.status = .completed
         context.insert(trip)
         try? context.save()
@@ -210,6 +217,7 @@ final class WorkTripViewModel: ObservableObject {
                             }
                         }
                         self.lastLocation = location
+                        self.checkTollPassage(at: location)
 
                         // Auto-pause after 10 min stationary
                         let speed = location.speed
@@ -282,6 +290,46 @@ final class WorkTripViewModel: ObservableObject {
         }
     }
 
+    private func loadTolls() async {
+        do {
+            loadedTolls = try await TollService.shared.getTolls()
+        } catch {
+            #if DEBUG
+            print("WorkTripViewModel: failed to load tolls: \(error)")
+            #endif
+        }
+    }
+
+    private func checkTollPassage(at location: CLLocation) {
+        guard !loadedTolls.isEmpty else { return }
+        let coord = location.coordinate
+        let now = Date()
+        let userCourse = location.course  // -1 if unavailable (stationary / no fix)
+        let vehicle = VehicleType(rawValue: UserDefaults.standard.string(forKey: "defaultVehicle") ?? "") ?? .car
+        let fuel = FuelType(rawValue: UserDefaults.standard.string(forKey: "defaultFuel") ?? "") ?? .gas
+
+        for toll in loadedTolls {
+            guard let dist = toll.distanceInMeters(from: coord),
+                  dist <= Self.tollPassageRadius else { continue }
+
+            if let lastPassed = recentlyPassed[toll.id],
+               now.timeIntervalSince(lastPassed) < Self.tollPassageCooldown { continue }
+
+            // Skip if toll is directional and user is heading the wrong way
+            if userCourse >= 0, let required = toll.requiredBearing {
+                if angleDifference(userCourse, required) > 90 { continue }
+            }
+
+            guard let price = toll.price(vehicle: vehicle, fuel: fuel, date: now) else { continue }
+
+            let passage = TollPassage(stationName: toll.stationName, price: price, passedAt: now)
+            passages.append(passage)
+            tollCount += 1
+            totalTollCost += price
+            recentlyPassed[toll.id] = now
+        }
+    }
+
     private func resetState() {
         tripState = .idle
         elapsedSeconds = 0
@@ -298,5 +346,8 @@ final class WorkTripViewModel: ObservableObject {
         speedAboveThresholdSeconds = 0
         showResumeNotification = false
         resumeCountdown = 0
+        passages = []
+        loadedTolls = []
+        recentlyPassed = [:]
     }
 }

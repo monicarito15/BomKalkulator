@@ -35,21 +35,24 @@ extension Date {
     
     // Returns a descriptive rush hour message
     func rushHourMessage() -> String {
+        let lang = LanguageManager.shared
         let calendar = Calendar.current
         let hour = calendar.component(.hour, from: self)
         let minute = calendar.component(.minute, from: self)
         let totalMinutes = hour * 60 + minute
-        
+
         // Morning rush hour: 6:30 - 9:00
         if totalMinutes >= 6 * 60 + 30 && totalMinutes < 9 * 60 {
-            return "Rush Hour: 6:30 - 9:00. Prices are higher during peak times."
+            return lang.t(nb: "Rushtid: 6:30 - 9:00. Prisene er høyere i rushtiden.",
+                          en: "Rush Hour: 6:30 - 9:00. Prices are higher during peak times.")
         }
-        
+
         // Afternoon rush hour: 15:00 - 17:00
         if totalMinutes >= 15 * 60 && totalMinutes < 17 * 60 {
-            return "Rush Hour: 15:00 - 17:00. Prices are higher during peak times."
+            return lang.t(nb: "Rushtid: 15:00 - 17:00. Prisene er høyere i rushtiden.",
+                          en: "Rush Hour: 15:00 - 17:00. Prices are higher during peak times.")
         }
-        
+
         return ""
     }
     

@@ -354,11 +354,11 @@ final class MapViewModel: ObservableObject {
             }
 
             if closestDistance <= maxDistanceMeters {
-                if let requiredBearing = directionalBearing(for: toll) {
+                if let required = toll.requiredBearing {
                     let a = coords[max(0, closestIndex)]
                     let b = coords[min(count - 1, closestIndex + 1)]
                     let routeBearing = bearing(from: a, to: b)
-                    if angleDifference(routeBearing, requiredBearing) > 90 { continue }
+                    if angleDifference(routeBearing, required) > 90 { continue }
                 }
                 tollsWithPosition.append((toll: toll, routeIndex: closestIndex, distance: closestDistance))
             }
@@ -384,24 +384,6 @@ final class MapViewModel: ObservableObject {
             .map { $0.toll }
     }
 
-    // Returns the cardinal bearing a directional toll expects, nil if non-directional
-    private nonisolated static func directionalBearing(for toll: Vegobjekt) -> Double? {
-        let name = toll.displayName.lowercased()
-        if name.contains("nordgående") { return 0 }
-        if name.contains("sørgående")  { return 180 }
-        if name.contains("østgående")  { return 90 }
-        if name.contains("vestgående") { return 270 }
-        // NVDB direction suffixes: FS/FN/FV/FØ/MS/MN/MV/MØ
-        let suffix = name.components(separatedBy: " ").last ?? ""
-        switch suffix {
-        case "fs", "mn": return 0    // fra sør / mot nord = northbound
-        case "ms", "fn": return 180  // mot sør / fra nord = southbound
-        case "fv", "mø": return 90   // fra vest / mot øst = eastbound
-        case "mv", "fø": return 270  // mot vest / fra øst = westbound
-        default: return nil
-        }
-    }
-
     // Compass bearing in degrees (0=N, 90=E, 180=S, 270=W)
     private nonisolated static func bearing(from a: CLLocationCoordinate2D, to b: CLLocationCoordinate2D) -> Double {
         let lat1 = a.latitude  * .pi / 180
@@ -410,12 +392,6 @@ final class MapViewModel: ObservableObject {
         let y = sin(dLon) * cos(lat2)
         let x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
         return (atan2(y, x) * 180 / .pi + 360).truncatingRemainder(dividingBy: 360)
-    }
-
-    // Smallest angular difference between two bearings (0–180)
-    private nonisolated static func angleDifference(_ a: Double, _ b: Double) -> Double {
-        let diff = abs(a - b).truncatingRemainder(dividingBy: 360)
-        return min(diff, 360 - diff)
     }
 
     // Minimum distance from point P to segment A→B using projection

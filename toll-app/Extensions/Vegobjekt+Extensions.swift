@@ -68,10 +68,34 @@ extension Vegobjekt {
     //Returns: Distancia en metros o nil si no hay coordenadas
     func distanceInMeters(from referenceLocation: CLLocationCoordinate2D) -> Double? {
         guard let tollCoords = lokasjon?.coordinates else { return nil }
-        
+
         let referencePoint = CLLocation(latitude: referenceLocation.latitude, longitude: referenceLocation.longitude)
         let tollLocation = CLLocation(latitude: tollCoords.latitude, longitude: tollCoords.longitude)
         return referencePoint.distance(from: tollLocation)
     }
+
+    // Returns the cardinal bearing (0=N, 90=E, 180=S, 270=W) that this station expects traffic from,
+    // or nil if the station is non-directional.
+    var requiredBearing: Double? {
+        let name = displayName.lowercased()
+        if name.contains("nordgående") { return 0 }
+        if name.contains("sørgående")  { return 180 }
+        if name.contains("østgående")  { return 90 }
+        if name.contains("vestgående") { return 270 }
+        let suffix = name.components(separatedBy: " ").last ?? ""
+        switch suffix {
+        case "fs", "mn": return 0    // fra sør / mot nord = northbound
+        case "ms", "fn": return 180  // mot sør / fra nord = southbound
+        case "fv", "mø": return 90   // fra vest / mot øst = eastbound
+        case "mv", "fø": return 270  // mot vest / fra øst = westbound
+        default: return nil
+        }
+    }
+}
+
+// Smallest angular difference between two compass bearings (result 0–180)
+func angleDifference(_ a: Double, _ b: Double) -> Double {
+    let diff = abs(a - b).truncatingRemainder(dividingBy: 360)
+    return min(diff, 360 - diff)
 }
 
