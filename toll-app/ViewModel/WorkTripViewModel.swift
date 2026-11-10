@@ -74,6 +74,20 @@ final class WorkTripViewModel: ObservableObject {
         selectedVehicleType = VehicleType(rawValue: UserDefaults.standard.string(forKey: "defaultVehicle") ?? "") ?? .car
         selectedFuelType = FuelType(rawValue: UserDefaults.standard.string(forKey: "defaultFuel") ?? "") ?? .gas
         checkForInterruptedTrip()
+        endOrphanedLiveActivities()
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willTerminateNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.backgroundSession?.invalidate()
+            self?.locationTask?.cancel()
+        }
+    }
+
+    deinit {
+        backgroundSession?.invalidate()
+        locationTask?.cancel()
     }
 
     // MARK: - Crash recovery methods
@@ -461,6 +475,14 @@ final class WorkTripViewModel: ObservableObject {
         }
     }
 
+    private func endOrphanedLiveActivities() {
+        Task {
+            for activity in Activity<WorkTripActivityAttributes>.activities {
+                await activity.end(nil, dismissalPolicy: .immediate)
+            }
+        }
+    }
+
     private func startLiveActivity(driverName: String) {
         let enabled = ActivityAuthorizationInfo().areActivitiesEnabled
         print("[LiveActivity] areActivitiesEnabled: \(enabled)")
@@ -472,6 +494,7 @@ final class WorkTripViewModel: ObservableObject {
             tripState: "active",
             timerStart: Date(),
             elapsedSeconds: 0,
+            distanceKm: 0,
             tollCount: 0,
             totalTollCost: 0
         )
@@ -502,6 +525,7 @@ final class WorkTripViewModel: ObservableObject {
             tripState: paused ? "paused" : "active",
             timerStart: timerStart,
             elapsedSeconds: elapsedSeconds,
+            distanceKm: distanceKm,
             tollCount: tollCount,
             totalTollCost: totalTollCost
         )
@@ -516,6 +540,7 @@ final class WorkTripViewModel: ObservableObject {
             tripState: "paused",
             timerStart: Date(),
             elapsedSeconds: elapsedSeconds,
+            distanceKm: distanceKm,
             tollCount: tollCount,
             totalTollCost: totalTollCost
         )
