@@ -7,9 +7,12 @@ struct WorkTripView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
 
+    @Query(sort: \UserVehicle.createdAt) private var vehicles: [UserVehicle]
     @AppStorage("driverName") private var driverName: String = ""
     @AppStorage("companyName") private var companyName: String = ""
     @State private var showEndTripAlert = false
+    @State private var selectedVehicle: UserVehicle?
+    @State private var showVehiclePicker = false
 
     private var cardBackground: Color {
         colorScheme == .dark ? Color(.systemGray6) : .white
@@ -42,6 +45,23 @@ struct WorkTripView: View {
             .navigationTitle(lang.t(nb: "Kjøretur", en: "Work Trip"))
             .navigationBarTitleDisplayMode(.large)
             .animation(.spring(response: 0.4, dampingFraction: 0.8), value: vm.showResumeNotification)
+            .sheet(isPresented: $showVehiclePicker) {
+                VehiclePickerSheet(selectedVehicle: $selectedVehicle) { vehicle in
+                    selectedVehicle = vehicle
+                    vm.selectedVehicleType = vehicle.vehicleType
+                    vm.selectedFuelType = vehicle.fuelType
+                }
+            }
+            .onAppear {
+                if selectedVehicle == nil {
+                    let primary = vehicles.first(where: { $0.isPrimary }) ?? vehicles.first
+                    selectedVehicle = primary
+                    if let v = primary {
+                        vm.selectedVehicleType = v.vehicleType
+                        vm.selectedFuelType = v.fuelType
+                    }
+                }
+            }
             .alert(lang.t(nb: "Avslutt kjøreturen?", en: "Stop this trip?"), isPresented: $showEndTripAlert) {
                 Button(lang.t(nb: "Ja, avslutt og lagre", en: "Yes, stop and save"), role: .destructive) {
                     vm.endTrip(context: modelContext, driverName: driverName, company: companyName)
@@ -90,6 +110,10 @@ struct WorkTripView: View {
                     .transition(.opacity)
             }
 
+            VehicleSelectionCard(vehicle: selectedVehicle, isLocked: false, onTap: { showVehiclePicker = true })
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+
             Spacer()
 
             VStack(spacing: 12) {
@@ -116,9 +140,6 @@ struct WorkTripView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
-
-                vehiclePickerSection
-                    .padding(.top, 8)
             }
 
             Spacer()
@@ -170,27 +191,13 @@ struct WorkTripView: View {
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.orange.opacity(0.25), lineWidth: 1))
     }
 
-    private var vehiclePickerSection: some View {
-        VStack(spacing: 10) {
-            Picker("", selection: $vm.selectedVehicleType) {
-                Text(lang.t(nb: "Liten bil", en: "Car")).tag(VehicleType.car)
-                Text(lang.t(nb: "Stor bil", en: "Large vehicle")).tag(VehicleType.largeCar)
-            }
-            .pickerStyle(.segmented)
-
-            Picker("", selection: $vm.selectedFuelType) {
-                Text("Elbil").tag(FuelType.electric)
-                Text("Bensin/Diesel").tag(FuelType.gas)
-            }
-            .pickerStyle(.segmented)
-        }
-        .padding(.horizontal, 40)
-    }
-
     private var activeView: some View {
         ScrollView {
             VStack(spacing: 16) {
                 tripHeader.padding(.top, 8)
+
+                VehicleSelectionCard(vehicle: selectedVehicle, isLocked: true, onTap: {})
+                    .padding(.horizontal, 16)
 
                 HStack(spacing: 12) {
                     statCard(
@@ -520,5 +527,5 @@ struct PulsingDot: View {
 
 #Preview {
     WorkTripView()
-        .modelContainer(for: WorkTrip.self, inMemory: true)
+        .modelContainer(for: [WorkTrip.self, UserVehicle.self], inMemory: true)
 }
