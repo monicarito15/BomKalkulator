@@ -389,7 +389,7 @@ struct HistoryView: View {
                     .lineLimit(2).multilineTextAlignment(.leading)
                 HStack(spacing: 8) {
                     HStack(spacing: 4) {
-                        Image(systemName: item.vehicleTypeEnum == .car ? "car.fill" : "motorcycle.fill")
+                        Image(systemName: "car.fill")
                             .font(.caption2).foregroundStyle(.secondary)
                         Image(systemName: item.fuelTypeEnum == .gas ? "fuelpump.fill" : "bolt.fill")
                             .font(.caption2).foregroundStyle(item.fuelTypeEnum == .gas ? .orange : .yellow)

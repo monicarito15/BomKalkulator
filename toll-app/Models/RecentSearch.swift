@@ -10,7 +10,6 @@ import SwiftData
 
 enum VehicleType: String, Codable, CaseIterable, Identifiable {
     case car
-    case motorcycle
     var id: String {rawValue}
 }
 

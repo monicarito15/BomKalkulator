@@ -262,7 +262,7 @@ struct TollPassedListView: View {
                 
                 ForEach(Array(tollCharges.enumerated()), id: \.element.id) { index, charge in
                     HStack(spacing: 12) {
-                        Image(systemName: vehicleType == .car ? "car.fill" : "motorcycle.fill")
+                        Image(systemName: "car.fill")
                             .font(.system(size: 16))
                             .foregroundStyle(.purple)
                             .frame(width: 24)

@@ -174,7 +174,6 @@ struct WorkTripView: View {
         VStack(spacing: 10) {
             Picker("", selection: $vm.selectedVehicleType) {
                 Text(lang.t(nb: "Bil", en: "Car")).tag(VehicleType.car)
-                Text(lang.t(nb: "Motorsykkel", en: "Motorcycle")).tag(VehicleType.motorcycle)
             }
             .pickerStyle(.segmented)
 

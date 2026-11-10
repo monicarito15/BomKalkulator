@@ -37,7 +37,7 @@ struct CalculatorView: View {
     @ObservedObject private var lang = LanguageManager.shared
 
     let fuelTypes: [FuelType] = [.gas, .electric, .diesel]
-    let vehicleTypes: [VehicleType] = [.car, .motorcycle]
+    let vehicleTypes: [VehicleType] = [.car]
 
     
     
@@ -307,8 +307,7 @@ struct CalculatorView: View {
 
                 segmentedPicker(
                     options: [
-                        (icon: "car.fill", label: lang.t(nb: "Bil", en: "Car"), isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car }),
-                        (icon: "motorcycle.fill", label: lang.t(nb: "Motorsykkel", en: "Motorcycle"), isSelected: selectedVehicleType == .motorcycle, action: { selectedVehicleType = .motorcycle })
+                        (icon: "car.fill", label: lang.t(nb: "Bil", en: "Car"), isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car })
                     ]
                 )
             }
@@ -377,8 +376,7 @@ struct CalculatorView: View {
                         .frame(width: 24)
                     segmentedPicker(
                         options: [
-                            (icon: "car.fill", label: "Car", isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car }),
-                            (icon: "motorcycle.fill", label: "Motorcycle", isSelected: selectedVehicleType == .motorcycle, action: { selectedVehicleType = .motorcycle })
+                            (icon: "car.fill", label: "Car", isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car })
                         ]
                     )
                 }
