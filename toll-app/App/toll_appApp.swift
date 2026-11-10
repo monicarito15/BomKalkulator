@@ -7,6 +7,7 @@ struct toll_appApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     let modelContainer: ModelContainer
     @StateObject private var purchaseManager = PurchaseManager()
+    @StateObject private var appState = AppState()
     
     init() {
         let schema = Schema([
@@ -17,7 +18,8 @@ struct toll_appApp: App {
             RecentSearch.self,
             SearchHistoryItem.self,
             FeeCalculation.self,
-            WorkTrip.self
+            WorkTrip.self,
+            UserVehicle.self
         ])
         
         do {
@@ -41,6 +43,7 @@ struct toll_appApp: App {
             SplashView()
                 .modelContainer(modelContainer)
                 .environmentObject(purchaseManager)
+                .environmentObject(appState)
         }
     }
 }

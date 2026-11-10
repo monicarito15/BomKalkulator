@@ -5,6 +5,7 @@ import Charts
 struct OversiktView: View {
     var onShowHistory: (() -> Void)? = nil
 
+    @EnvironmentObject private var appState: AppState
     @ObservedObject private var lang = LanguageManager.shared
     @AppStorage("driverName") private var driverName: String = ""
     @Environment(\.colorScheme) private var colorScheme
@@ -134,13 +135,14 @@ struct OversiktView: View {
                     .minimumScaleFactor(0.75)
             }
             Spacer()
-            Button { } label: {
-                Image(systemName: "bell")
-                    .font(.system(size: 18))
-                    .foregroundStyle(.primary)
-                    .padding(10)
-                    .background(cardBackground)
-                    .clipShape(Circle())
+            Button {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.9)) {
+                    appState.showAccountPanel = true
+                }
+            } label: {
+                Image(systemName: "person.circle.fill")
+                    .font(.system(size: 28))
+                    .foregroundStyle(.blue)
             }
         }
     }
