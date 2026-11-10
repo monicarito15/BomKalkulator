@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct toll_appApp: App {
 
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     let modelContainer: ModelContainer
     @StateObject private var purchaseManager = PurchaseManager()
     

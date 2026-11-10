@@ -83,6 +83,13 @@ struct WorkTripView: View {
         VStack(spacing: 0) {
             tripHeader.padding(.top, 8)
 
+            if vm.hasInterruptedTrip {
+                recoveryBanner
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .transition(.opacity)
+            }
+
             Spacer()
 
             VStack(spacing: 12) {
@@ -109,10 +116,76 @@ struct WorkTripView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
+
+                vehiclePickerSection
+                    .padding(.top, 8)
             }
 
             Spacer()
         }
+    }
+
+    private var recoveryBanner: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundStyle(.orange)
+                Text(lang.t(nb: "Avbrutt kjøretur funnet", en: "Interrupted trip found"))
+                    .font(.subheadline.weight(.semibold))
+            }
+            Text(lang.t(nb: "Forrige tur ble avbrutt. Vil du fortsette der du slapp?", en: "Your last trip was interrupted. Continue where you left off?"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            HStack(spacing: 10) {
+                Button {
+                    vm.resumeInterruptedTrip()
+                } label: {
+                    Text(lang.t(nb: "Fortsett", en: "Continue"))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(Color.blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                Button {
+                    withAnimation {
+                        vm.discardInterruptedTrip()
+                    }
+                } label: {
+                    Text(lang.t(nb: "Forkast", en: "Discard"))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(Color.clear)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.red, lineWidth: 1.5))
+                }
+            }
+        }
+        .padding(16)
+        .background(Color.orange.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.orange.opacity(0.25), lineWidth: 1))
+    }
+
+    private var vehiclePickerSection: some View {
+        VStack(spacing: 10) {
+            Picker("", selection: $vm.selectedVehicleType) {
+                Text(lang.t(nb: "Bil", en: "Car")).tag(VehicleType.car)
+                Text(lang.t(nb: "Motorsykkel", en: "Motorcycle")).tag(VehicleType.motorcycle)
+            }
+            .pickerStyle(.segmented)
+
+            Picker("", selection: $vm.selectedFuelType) {
+                Text("Elbil").tag(FuelType.electric)
+                Text("Diesel").tag(FuelType.diesel)
+                Text(lang.t(nb: "Bensin", en: "Petrol")).tag(FuelType.gas)
+            }
+            .pickerStyle(.segmented)
+        }
+        .padding(.horizontal, 40)
     }
 
     private var activeView: some View {

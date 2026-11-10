@@ -67,6 +67,9 @@ struct MainTabView: View {
                 .tag(4)
         }
         .preferredColorScheme(AppAppearance(rawValue: appearance)?.colorScheme)
+        .onReceive(NotificationCenter.default.publisher(for: .openWorkTripTab)) { _ in
+            selectedTab = 1
+        }
     }
 }
 #Preview {

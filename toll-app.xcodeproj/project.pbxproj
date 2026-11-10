@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6AE7C9E430A236DA00246D42 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE7C9E330A236D900246D42 /* WidgetKit.framework */; };
+		6AE7C9E630A236DA00246D42 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE7C9E530A236DA00246D42 /* SwiftUI.framework */; };
+		6AE7C9F730A236DD00246D42 /* WorkTripWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6AE7C9E130A236D900246D42 /* WorkTripWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		6AE7CABF30A264E300246D42 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE7CABE30A264E300246D42 /* ActivityKit.framework */; };
 		A235F7152E8401C5000D9452 /* ArcGIS in Frameworks */ = {isa = PBXBuildFile; productRef = A235F7142E8401C5000D9452 /* ArcGIS */; };
 /* End PBXBuildFile section */
 
@@ -18,14 +22,53 @@
 			remoteGlobalIDString = A26BAE442E6EF0D600B45F61;
 			remoteInfo = "toll-app";
 		};
+		6AE7C9F530A236DD00246D42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A26BAE3D2E6EF0D600B45F61 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6AE7C9E030A236D900246D42;
+			remoteInfo = WorkTripWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6AE7C9FC30A236DD00246D42 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				6AE7C9F730A236DD00246D42 /* WorkTripWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		6A9DF5EE2F82885D003D090B /* toll-appTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "toll-appTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6AE7C9E130A236D900246D42 /* WorkTripWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkTripWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		6AE7C9E330A236D900246D42 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		6AE7C9E530A236DA00246D42 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		6AE7CABE30A264E300246D42 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		A26BAE452E6EF0D600B45F61 /* toll-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "toll-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6AE7CAB830A23C9200246D42 /* Exceptions for "toll-app" folder in "toll-appTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/WorkTripActivityAttributes.swift,
+			);
+			target = 6A9DF5ED2F82885D003D090B /* toll-appTests */;
+		};
+		6AE7CAB930A23C9200246D42 /* Exceptions for "toll-app" folder in "WorkTripWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/WorkTripActivityAttributes.swift,
+			);
+			target = 6AE7C9E030A236D900246D42 /* WorkTripWidgetExtension */;
+		};
 		A235F7122E840117000D9452 /* Exceptions for "toll-app" folder in "toll-app" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -41,10 +84,17 @@
 			path = "toll-appTests";
 			sourceTree = "<group>";
 		};
+		6AE7CA2430A237C000246D42 /* WorkTripWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WorkTripWidget;
+			sourceTree = "<group>";
+		};
 		A26BAE472E6EF0D600B45F61 /* toll-app */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				A235F7122E840117000D9452 /* Exceptions for "toll-app" folder in "toll-app" target */,
+				6AE7CAB830A23C9200246D42 /* Exceptions for "toll-app" folder in "toll-appTests" target */,
+				6AE7CAB930A23C9200246D42 /* Exceptions for "toll-app" folder in "WorkTripWidgetExtension" target */,
 			);
 			path = "toll-app";
 			sourceTree = "<group>";
@@ -59,6 +109,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6AE7C9DE30A236D900246D42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6AE7CABF30A264E300246D42 /* ActivityKit.framework in Frameworks */,
+				6AE7C9E630A236DA00246D42 /* SwiftUI.framework in Frameworks */,
+				6AE7C9E430A236DA00246D42 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A26BAE422E6EF0D600B45F61 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -70,11 +130,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6AE7C9E230A236D900246D42 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6AE7CABE30A264E300246D42 /* ActivityKit.framework */,
+				6AE7C9E330A236D900246D42 /* WidgetKit.framework */,
+				6AE7C9E530A236DA00246D42 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A26BAE3C2E6EF0D600B45F61 = {
 			isa = PBXGroup;
 			children = (
 				A26BAE472E6EF0D600B45F61 /* toll-app */,
 				6A9DF5EF2F82885D003D090B /* toll-appTests */,
+				6AE7CA2430A237C000246D42 /* WorkTripWidget */,
+				6AE7C9E230A236D900246D42 /* Frameworks */,
 				A26BAE462E6EF0D600B45F61 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -84,6 +156,7 @@
 			children = (
 				A26BAE452E6EF0D600B45F61 /* toll-app.app */,
 				6A9DF5EE2F82885D003D090B /* toll-appTests.xctest */,
+				6AE7C9E130A236D900246D42 /* WorkTripWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -114,6 +187,25 @@
 			productReference = 6A9DF5EE2F82885D003D090B /* toll-appTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		6AE7C9E030A236D900246D42 /* WorkTripWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6AE7C9F830A236DD00246D42 /* Build configuration list for PBXNativeTarget "WorkTripWidgetExtension" */;
+			buildPhases = (
+				6AE7C9DD30A236D900246D42 /* Sources */,
+				6AE7C9DE30A236D900246D42 /* Frameworks */,
+				6AE7C9DF30A236D900246D42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WorkTripWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = WorkTripWidgetExtension;
+			productReference = 6AE7C9E130A236D900246D42 /* WorkTripWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		A26BAE442E6EF0D600B45F61 /* toll-app */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A26BAE502E6EF0D900B45F61 /* Build configuration list for PBXNativeTarget "toll-app" */;
@@ -121,10 +213,12 @@
 				A26BAE412E6EF0D600B45F61 /* Sources */,
 				A26BAE422E6EF0D600B45F61 /* Frameworks */,
 				A26BAE432E6EF0D600B45F61 /* Resources */,
+				6AE7C9FC30A236DD00246D42 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				6AE7C9F630A236DD00246D42 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A26BAE472E6EF0D600B45F61 /* toll-app */,
@@ -151,6 +245,9 @@
 						CreatedOnToolsVersion = 26.4;
 						TestTargetID = A26BAE442E6EF0D600B45F61;
 					};
+					6AE7C9E030A236D900246D42 = {
+						CreatedOnToolsVersion = 26.4;
+					};
 					A26BAE442E6EF0D600B45F61 = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -175,12 +272,20 @@
 			targets = (
 				A26BAE442E6EF0D600B45F61 /* toll-app */,
 				6A9DF5ED2F82885D003D090B /* toll-appTests */,
+				6AE7C9E030A236D900246D42 /* WorkTripWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		6A9DF5EC2F82885D003D090B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6AE7C9DF30A236D900246D42 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -204,6 +309,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6AE7C9DD30A236D900246D42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A26BAE412E6EF0D600B45F61 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -218,6 +330,11 @@
 			isa = PBXTargetDependency;
 			target = A26BAE442E6EF0D600B45F61 /* toll-app */;
 			targetProxy = 6A9DF5F22F82885D003D090B /* PBXContainerItemProxy */;
+		};
+		6AE7C9F630A236DD00246D42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6AE7C9E030A236D900246D42 /* WorkTripWidgetExtension */;
+			targetProxy = 6AE7C9F530A236DD00246D42 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -261,6 +378,70 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/toll-app.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/toll-app";
+			};
+			name = Release;
+		};
+		6AE7C9F930A236DD00246D42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = AG92ANRBCG;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WorkTripWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WorkTripWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "no.carolina.toll-app.WorkTripWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6AE7C9FA30A236DD00246D42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = AG92ANRBCG;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = WorkTripWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = WorkTripWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "no.carolina.toll-app.WorkTripWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -461,6 +642,15 @@
 			buildConfigurations = (
 				6A9DF5F52F82885D003D090B /* Debug */,
 				6A9DF5F62F82885D003D090B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6AE7C9F830A236DD00246D42 /* Build configuration list for PBXNativeTarget "WorkTripWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6AE7C9F930A236DD00246D42 /* Debug */,
+				6AE7C9FA30A236DD00246D42 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
