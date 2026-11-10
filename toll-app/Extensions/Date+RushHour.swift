@@ -25,9 +25,10 @@ extension Date {
         let morningStart = 6 * 60 + 30  // 390 minutes
         let morningEnd = 9 * 60         // 540 minutes
         
-        // Afternoon rush hour: 15:00 - 17:00 (900 - 1020 minutes)
-        let afternoonStart = 15 * 60    // 900 minutes
-        let afternoonEnd = 17 * 60      // 1020 minutes
+        // Afternoon rush hour: 14:30 - 17:00 (870 - 1020 minutes)
+        // Bergen (Ferde AS) starts at 14:30 — use earliest Norwegian rush hour as lower bound
+        let afternoonStart = 14 * 60 + 30  // 870 minutes
+        let afternoonEnd = 17 * 60          // 1020 minutes
         
         return (totalMinutes >= morningStart && totalMinutes < morningEnd) ||
                (totalMinutes >= afternoonStart && totalMinutes < afternoonEnd)
@@ -47,10 +48,10 @@ extension Date {
                           en: "Rush Hour: 6:30 - 9:00. Prices are higher during peak times.")
         }
 
-        // Afternoon rush hour: 15:00 - 17:00
-        if totalMinutes >= 15 * 60 && totalMinutes < 17 * 60 {
-            return lang.t(nb: "Rushtid: 15:00 - 17:00. Prisene er høyere i rushtiden.",
-                          en: "Rush Hour: 15:00 - 17:00. Prices are higher during peak times.")
+        // Afternoon rush hour: 14:30 - 17:00
+        if totalMinutes >= 14 * 60 + 30 && totalMinutes < 17 * 60 {
+            return lang.t(nb: "Rushtid: 14:30 - 17:00. Prisene er høyere i rushtiden.",
+                          en: "Rush Hour: 14:30 - 17:00. Prices are higher during peak times.")
         }
 
         return ""
@@ -70,8 +71,8 @@ extension Date {
         }
         
         // Afternoon rush hour
-        if totalMinutes >= 15 * 60 && totalMinutes < 17 * 60 {
-            return "15:00 - 17:00"
+        if totalMinutes >= 14 * 60 + 30 && totalMinutes < 17 * 60 {
+            return "14:30 - 17:00"
         }
         
         return nil
