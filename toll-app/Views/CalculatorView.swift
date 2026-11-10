@@ -36,7 +36,7 @@ struct CalculatorView: View {
     @StateObject private var locationManager = LocationManager()
     @ObservedObject private var lang = LanguageManager.shared
 
-    let fuelTypes: [FuelType] = [.gas, .electric, .diesel]
+    let fuelTypes: [FuelType] = [.electric, .gas]
     let vehicleTypes: [VehicleType] = [.car]
 
     
@@ -307,7 +307,8 @@ struct CalculatorView: View {
 
                 segmentedPicker(
                     options: [
-                        (icon: "car.fill", label: lang.t(nb: "Bil", en: "Car"), isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car })
+                        (icon: "car.fill", label: lang.t(nb: "Liten bil", en: "Car"), isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car }),
+                        (icon: "van.fill", label: lang.t(nb: "Stor bil", en: "Large vehicle"), isSelected: selectedVehicleType == .largeCar, action: { selectedVehicleType = .largeCar })
                     ]
                 )
             }
@@ -322,9 +323,8 @@ struct CalculatorView: View {
 
                 segmentedPicker(
                     options: [
-                        (icon: "fuelpump.fill", label: lang.t(nb: "Bensin", en: "Gas"), isSelected: selectedFuelType == .gas, action: { selectedFuelType = .gas }),
-                        (icon: "bolt.fill", label: lang.t(nb: "Elektrisk", en: "Electric"), isSelected: selectedFuelType == .electric, action: { selectedFuelType = .electric }),
-                        (icon: "fuelpump.fill", label: lang.t(nb: "Diesel", en: "Diesel"), isSelected: selectedFuelType == .diesel, action: { selectedFuelType = .diesel })
+                        (icon: "bolt.fill", label: lang.t(nb: "Elbil", en: "Electric"), isSelected: selectedFuelType == .electric, action: { selectedFuelType = .electric }),
+                        (icon: "fuelpump.fill", label: "Bensin/Diesel", isSelected: selectedFuelType == .gas, action: { selectedFuelType = .gas })
                     ]
                 )
             }
@@ -376,7 +376,8 @@ struct CalculatorView: View {
                         .frame(width: 24)
                     segmentedPicker(
                         options: [
-                            (icon: "car.fill", label: "Car", isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car })
+                            (icon: "car.fill", label: lang.t(nb: "Liten bil", en: "Car"), isSelected: selectedVehicleType == .car, action: { selectedVehicleType = .car }),
+                            (icon: "van.fill", label: lang.t(nb: "Stor bil", en: "Large vehicle"), isSelected: selectedVehicleType == .largeCar, action: { selectedVehicleType = .largeCar })
                         ]
                     )
                 }
@@ -394,9 +395,8 @@ struct CalculatorView: View {
                         .frame(width: 24)
                     segmentedPicker(
                         options: [
-                            (icon: "fuelpump.fill", label: "Gas", isSelected: selectedFuelType == .gas, action: { selectedFuelType = .gas }),
-                            (icon: "bolt.fill", label: "Electric", isSelected: selectedFuelType == .electric, action: { selectedFuelType = .electric }),
-                            (icon: "fuelpump.fill", label: "Diesel", isSelected: selectedFuelType == .diesel, action: { selectedFuelType = .diesel })
+                            (icon: "bolt.fill", label: lang.t(nb: "Elbil", en: "Electric"), isSelected: selectedFuelType == .electric, action: { selectedFuelType = .electric }),
+                            (icon: "fuelpump.fill", label: "Bensin/Diesel", isSelected: selectedFuelType == .gas, action: { selectedFuelType = .gas })
                         ]
                     )
                 }

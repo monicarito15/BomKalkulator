@@ -242,7 +242,7 @@ struct SettingsView: View {
             HStack(spacing: 12) {
                 let fuel = FuelType(rawValue: defaultFuel) ?? .gas
                 Image(systemName: fuel == .electric ? "bolt.fill" : "fuelpump.fill")
-                    .foregroundStyle(fuel == .electric ? .green : fuel == .diesel ? .gray : .orange)
+                    .foregroundStyle(fuel == .electric ? .green : .orange)
                     .frame(width: 24)
 
                 Text(lang.t(nb: "Drivstoff", en: "Fuel"))

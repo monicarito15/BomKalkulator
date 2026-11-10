@@ -10,13 +10,13 @@ import SwiftData
 
 enum VehicleType: String, Codable, CaseIterable, Identifiable {
     case car
+    case largeCar  // Stor bil / Klasse 2: >3500 kg (vans, minibuss, lastebil)
     var id: String {rawValue}
 }
 
 enum FuelType: String, Codable, CaseIterable, Identifiable {
     case electric
-    case diesel
-    case gas
+    case gas  // covers both bensin and diesel — same NVDB price (Takst liten/stor bil)
     var id: String {rawValue}
 }
 

@@ -26,15 +26,23 @@ class Vegobjekt: Identifiable {
         self.lokasjon = lokasjon
     }
     
-    // Pricing fom NVDB egenskaper
+    // Pricing from NVDB egenskaper
     var normalPriceCar: Double? {
-          egenskaper.first(where: { $0.navn == "Takst liten bil" })
-              .flatMap { Double($0.verdi ?? "") }
-      }
-      var rushPriceCar: Double? {
-          egenskaper.first(where: { $0.navn == "Rushtidstakst liten bil" })
-              .flatMap { Double($0.verdi ?? "") }
-      }
+        egenskaper.first(where: { $0.navn == "Takst liten bil" })
+            .flatMap { Double($0.verdi ?? "") }
+    }
+    var rushPriceCar: Double? {
+        egenskaper.first(where: { $0.navn == "Rushtidstakst liten bil" })
+            .flatMap { Double($0.verdi ?? "") }
+    }
+    var normalPriceLargeCar: Double? {
+        egenskaper.first(where: { $0.navn == "Takst stor bil" })
+            .flatMap { Double($0.verdi ?? "") }
+    }
+    var rushPriceLargeCar: Double? {
+        egenskaper.first(where: { $0.navn == "Rushtidstakst stor bil" })
+            .flatMap { Double($0.verdi ?? "") }
+    }
 
       var hasRushHourPricing: Bool {
           egenskaper.first(where: { $0.navn == "Tidsdifferensiert takst" })?.verdi == "Ja"
@@ -115,21 +123,28 @@ class Vegobjekt: Identifiable {
     }
 
     func price(vehicle: VehicleType, fuel: FuelType, date: Date) -> Double? {
-        guard let base = normalPriceCar else { return nil }
-
         let isRush = isRushHour(at: date)
-        var carPrice = isRush ? (rushPriceCar ?? base) : base
+
+        var basePrice: Double
+        switch vehicle {
+        case .largeCar:
+            guard let base = normalPriceLargeCar else { return nil }
+            basePrice = isRush ? (rushPriceLargeCar ?? base) : base
+        case .car:
+            guard let base = normalPriceCar else { return nil }
+            basePrice = isRush ? (rushPriceCar ?? base) : base
+        }
 
         // Trondheim operators with outdated NVDB prices (not updated since Feb 2024)
         if isOutdatedNVDBStation {
-            carPrice *= 1.12
+            basePrice *= 1.12
         }
 
         switch fuel {
         case .electric:
-            return carPrice * evMultiplier
+            return basePrice * evMultiplier
         default:
-            return carPrice
+            return basePrice
         }
     }
 }

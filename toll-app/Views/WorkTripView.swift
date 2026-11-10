@@ -173,14 +173,14 @@ struct WorkTripView: View {
     private var vehiclePickerSection: some View {
         VStack(spacing: 10) {
             Picker("", selection: $vm.selectedVehicleType) {
-                Text(lang.t(nb: "Bil", en: "Car")).tag(VehicleType.car)
+                Text(lang.t(nb: "Liten bil", en: "Car")).tag(VehicleType.car)
+                Text(lang.t(nb: "Stor bil", en: "Large vehicle")).tag(VehicleType.largeCar)
             }
             .pickerStyle(.segmented)
 
             Picker("", selection: $vm.selectedFuelType) {
                 Text("Elbil").tag(FuelType.electric)
-                Text("Diesel").tag(FuelType.diesel)
-                Text(lang.t(nb: "Bensin", en: "Petrol")).tag(FuelType.gas)
+                Text("Bensin/Diesel").tag(FuelType.gas)
             }
             .pickerStyle(.segmented)
         }
