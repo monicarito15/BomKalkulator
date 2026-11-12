@@ -1,7 +1,7 @@
 import ActivityKit
 import Foundation
 
-struct WorkTripActivityAttributes: ActivityAttributes {
+struct WorkTripActivityAttributes: ActivityAttributes, Sendable {
     struct ContentState: Codable, Hashable {
         var tripState: String
         var timerStart: Date

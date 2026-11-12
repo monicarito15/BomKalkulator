@@ -79,9 +79,9 @@ final class WorkTripViewModel: ObservableObject {
             forName: UIApplication.willTerminateNotification,
             object: nil,
             queue: .main
-        ) { [weak self] _ in
-            self?.backgroundSession?.invalidate()
-            self?.locationTask?.cancel()
+        ) { [self] _ in
+            backgroundSession?.invalidate()
+            locationTask?.cancel()
         }
     }
 

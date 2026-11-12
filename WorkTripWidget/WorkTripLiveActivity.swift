@@ -16,10 +16,10 @@ struct WorkTripLiveActivity: Widget {
                         VStack(alignment: .leading, spacing: 1) {
                             Text("Kjøretur")
                                 .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.white.opacity(0.6))
                             Text(String(format: "%.1f km", context.state.distanceKm))
                                 .font(.subheadline.weight(.bold))
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(.white)
                         }
                     }
                 }
@@ -27,25 +27,25 @@ struct WorkTripLiveActivity: Widget {
                     VStack(alignment: .trailing, spacing: 1) {
                         Text("\(context.state.tollCount) bom")
                             .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.white.opacity(0.6))
                         Text(String(format: "%.0f kr", context.state.totalTollCost))
                             .font(.subheadline.weight(.bold))
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(.white)
                     }
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     HStack {
                         Image(systemName: "timer")
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.white.opacity(0.6))
                         if context.state.tripState == "active" {
                             Text(context.state.timerStart, style: .timer)
                                 .font(.system(size: 28, weight: .bold, design: .rounded).monospacedDigit())
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(.white)
                         } else {
                             Text(formatElapsed(context.state.elapsedSeconds))
                                 .font(.system(size: 28, weight: .bold, design: .rounded).monospacedDigit())
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.white.opacity(0.6))
                         }
                         Spacer()
                         if context.state.tripState == "paused" {

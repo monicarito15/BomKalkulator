@@ -1,3 +1,4 @@
+import ActivityKit
 import UIKit
 import UserNotifications
 
@@ -9,6 +10,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
         return true
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        let group = DispatchGroup()
+        for activity in Activity<WorkTripActivityAttributes>.activities {
+            group.enter()
+            Task.detached {
+                await activity.end(nil, dismissalPolicy: .immediate)
+                group.leave()
+            }
+        }
+        _ = group.wait(timeout: .now() + 2.0)
     }
 
     func userNotificationCenter(
